@@ -1,0 +1,2313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecis Telha — Indústria & Construção</title>
+<style>
+:root{--bg:#080d18;--panel:#111a2c;--panel2:#16213a;--panel3:#1c2a48;
+  --line:#263757;--ink:#e9effb;--muted:#8ea3c9;--accent:#f5a524;--ok:#2fd39b;--warn:#ffbb33;--bad:#ff5f6d;
+  --shadow:0 10px 30px rgba(0,0,0,.45);}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;color:var(--ink);
+  background:radial-gradient(1200px 700px at 15% -10%,#17253f 0,transparent 60%),
+    radial-gradient(900px 600px at 100% 0,#2a1a12 0,transparent 55%),var(--bg);
+  background-attachment:fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:radial-gradient(circle at 50% 30%,#000 30%,transparent 85%)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:var(--sky-tint,transparent);transition:background 3s ease}
+#app{position:relative;z-index:2;max-width:1900px;margin:0 auto;padding:14px 16px 28px;display:flex;flex-direction:column;gap:12px}
+
+.topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:linear-gradient(180deg,#16223a,#0f1728);border:1px solid var(--line);
+  border-radius:14px;padding:9px 13px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:9px;min-width:170px}
+.logo-img{width:44px;height:44px;flex:0 0 auto;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))}
+.brand h1{margin:0;font-size:15px;letter-spacing:.3px;color:#e9effb}
+.brand p{margin:2px 0 0;font-size:10.5px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+.stats{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+  padding:4px 8px;min-width:82px}
+.stat span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.stat b{font-size:12px;font-variant-numeric:tabular-nums}
+.stat.money b{color:var(--ok)}.stat.pend b{color:var(--warn)}.stat.lucro b{color:#7ef7c8}
+.stat.debt b{color:#ff8b95;cursor:pointer}.stat.debt:hover{filter:brightness(1.2)}
+.stat.arm b{color:#ffbb33}.stat.arm.over b{color:#ff5f6d;animation:armPulse .8s infinite}
+@keyframes armPulse{50%{opacity:.5}}
+.stat.money.flash{animation:statFlash .6s ease}
+@keyframes statFlash{50%{box-shadow:0 0 0 2px rgba(47,211,155,.6);transform:scale(1.05)}}
+.ctrls{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+
+.btn{font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;border-radius:8px;
+  padding:6px 10px;border:1px solid var(--line);background:var(--panel3);color:var(--ink);
+  transition:transform .08s,filter .15s;white-space:nowrap}
+.btn:hover{filter:brightness(1.18)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.primary{background:linear-gradient(180deg,#ffc14d,#e8890f);color:#22160a;border-color:#ffcf7a;box-shadow:0 4px 12px rgba(245,165,36,.28)}
+.btn.ok{background:linear-gradient(180deg,#39e0a6,#16a97c);color:#04241a;border-color:#5ff0bd}
+.btn.danger{background:linear-gradient(180deg,#ff5f6d,#c92432);color:#fff;border-color:#ff8b95}
+.btn.ghost{background:transparent;color:var(--muted)}
+.btn.mini{padding:3px 7px;font-size:10.5px}
+.btn.tiny{padding:2px 6px;font-size:10px;font-weight:700}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.4)}
+.btn.big{font-size:13px;padding:10px 18px;border-radius:10px}
+.btn.audio{width:30px;height:30px;padding:0;display:grid;place-items:center;font-size:13px}
+.btn.audio.playing{background:linear-gradient(180deg,#ffc14d,#e8890f);color:#22160a}
+.btn.mat-btn{background:linear-gradient(180deg,#4a7fc1,#2c5288);color:#fff;border-color:#6b9fd8}
+.btn.save-btn{background:linear-gradient(180deg,#2fd39b,#16a97c);color:#04241a;border-color:#5ff0bd}
+
+#loading-screen{position:fixed;inset:0;z-index:200;
+  background:radial-gradient(circle at 50% 50%,#1a2942 0%,#080d18 100%);
+  display:grid;place-items:center;transition:opacity .6s ease;opacity:1}
+#loading-screen.hidden{opacity:0;pointer-events:none}
+.load-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;
+  max-width:420px;padding:24px;text-align:center}
+.load-logo{width:140px;height:140px;margin-bottom:10px;animation:loadLogoPulse 2s ease-in-out infinite}
+@keyframes loadLogoPulse{
+  0%,100%{transform:scale(1);filter:drop-shadow(0 10px 30px rgba(245,165,36,.2))}
+  50%{transform:scale(1.05);filter:drop-shadow(0 15px 40px rgba(245,165,36,.4))}
+}
+.load-title{margin:0;font-size:30px;letter-spacing:1px;color:#0b3b6b;
+  background:#fff;padding:5px 20px;border-radius:8px;text-transform:uppercase;font-weight:900}
+.load-sub{margin:0;font-size:11px;color:#8ba0c4;text-transform:uppercase;letter-spacing:2.5px}
+.load-bar-container{width:100%;height:9px;background:#0d1727;border:1px solid #2a3c5e;
+  border-radius:10px;overflow:hidden;margin-top:14px}
+.load-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#0b3b6b,#4a7fc1);
+  border-radius:10px;transition:width .25s ease;box-shadow:0 0 16px rgba(74,127,193,.6)}
+.load-status{margin:0;font-size:12px;color:#cfe0ff;min-height:16px;font-weight:600}
+.load-tip{margin:0;font-size:11px;color:#7589ac;font-style:italic;min-height:16px;line-height:1.4}
+.load-buttons{display:flex;gap:10px;margin-top:18px;width:100%}
+.load-buttons .btn{flex:1;font-size:13px;padding:11px 14px}
+.load-version{margin-top:20px;font-size:9.5px;color:#5f7395;letter-spacing:1px}
+
+.save-indicator{font-size:14px;min-width:20px;text-align:center;transition:all .3s}
+.save-indicator.saving{animation:savePulse .8s ease-in-out infinite;color:#7ef7c8}
+@keyframes savePulse{50%{transform:scale(1.3)}}
+
+.board{display:grid;grid-template-columns:1fr 1fr 1.15fr 1fr 1.05fr;gap:9px;align-items:start}
+.col{background:linear-gradient(180deg,rgba(24,36,60,.95),rgba(14,21,36,.95));
+  border:1px solid var(--line);border-radius:12px;padding:8px;min-height:180px;
+  display:flex;flex-direction:column;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.col::after{content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.55}
+.col-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.col-head h2{margin:0;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#b9c9e6;
+  display:flex;align-items:center;gap:5px}
+.num{width:16px;height:16px;border-radius:5px;display:grid;place-items:center;font-size:9.5px;
+  background:rgba(245,165,36,.16);color:#ffca63;border:1px solid rgba(245,165,36,.35)}
+.badge{font-size:10px;padding:1px 6px;border-radius:20px;
+  background:var(--panel3);border:1px solid var(--line);color:var(--muted);font-variant-numeric:tabular-nums}
+.badge.free{background:rgba(47,211,155,.14);color:#63f0c0;border-color:rgba(47,211,155,.35)}
+.hint{font-size:10px;color:#7589ac;margin:0 0 5px;line-height:1.3}
+.list{display:flex;flex-direction:column;gap:5px;flex:1}
+.card{background:linear-gradient(180deg,#18243d,#131d32);border:1px solid var(--line);
+  border-radius:9px;padding:6px 8px;position:relative}
+.card.fiel{border-color:rgba(245,165,36,.42)}
+.card.premium{border-color:rgba(255,95,109,.5);background:linear-gradient(180deg,#2a1a24,#1a1018);
+  animation:premiumPulse 2s ease-in-out infinite}
+.card.material{border-color:rgba(63,140,255,.5);background:linear-gradient(180deg,#18253d,#0f1a2e)}
+@keyframes premiumPulse{50%{box-shadow:0 0 16px rgba(255,95,109,.35)}}
+.card .row{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.card b{font-size:11.5px;font-weight:700}
+.card .spec{font-size:10.5px;color:var(--muted);margin-top:2px}
+.price{font-size:11.5px;font-weight:800;color:var(--ok);font-variant-numeric:tabular-nums}
+.actions{display:flex;gap:4px;margin-top:5px}
+.actions .btn{flex:1;font-size:10px;padding:3px 6px}
+.tag{font-size:9px;text-transform:uppercase;letter-spacing:.5px;padding:1px 5px;border-radius:4px;
+  background:rgba(255,255,255,.06);color:#9db2d6;border:1px solid rgba(255,255,255,.08)}
+.tag.run{background:rgba(47,211,155,.14);color:#63f0c0;border-color:rgba(47,211,155,.35)}
+.tag.stop{background:rgba(255,95,109,.14);color:#ff8b95;border-color:rgba(255,95,109,.35)}
+.tag.wait{background:rgba(255,187,51,.14);color:#ffca63;border-color:rgba(255,187,51,.35)}
+.tag.fiel{background:rgba(245,165,36,.16);color:#ffd27a;border-color:rgba(245,165,36,.4)}
+.tag.vip{background:rgba(255,95,109,.22);color:#ffb3ba;border-color:rgba(255,95,109,.5);animation:vipBlink 1.5s ease-in-out infinite}
+@keyframes vipBlink{50%{background:rgba(255,95,109,.35)}}
+.tag.brand{background:rgba(63,140,255,.14);color:#9ec7ff;border-color:rgba(63,140,255,.35)}
+.tag.mat{background:rgba(107,159,216,.14);color:#9ec7ff;border-color:rgba(107,159,216,.4)}
+.bar{height:5px;border-radius:5px;background:#0c1526;overflow:hidden;margin-top:4px;border:1px solid #1d2b47}
+.bar>i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#2fd39b,#7ef7c8);transition:width .3s}
+.bar.time>i{background:linear-gradient(90deg,#f5a524,#ffd27a)}
+.bar.time.low>i{background:linear-gradient(90deg,#ff5f6d,#ff9aa2);animation:pulseBar .8s infinite}
+@keyframes pulseBar{50%{opacity:.55}}
+.bar.blue>i{background:linear-gradient(90deg,#3f8cff,#8fc0ff)}
+.bar.wear>i{background:linear-gradient(90deg,#39e0a6,#ffd27a)}
+.bar.wear.hot>i{background:linear-gradient(90deg,#f5a524,#ff5f6d)}
+.bar.arm>i{background:linear-gradient(90deg,#4a7fc1,#9ec7ff)}
+.bar.arm.hot>i{background:linear-gradient(90deg,#ffbb33,#ff5f6d)}
+.tiny{font-size:9.5px;color:#8296b8;margin-top:3px;display:flex;justify-content:space-between;gap:5px}
+.tiny b{color:#cfe0ff;font-size:9.5px}
+.avatar{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;font-size:9px;font-weight:800;
+  background:rgba(245,165,36,.15);color:#ffca63;border:1px solid rgba(245,165,36,.3);flex:0 0 auto;position:relative}
+.avatar::after{content:attr(data-mood);position:absolute;bottom:-3px;right:-3px;font-size:9px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.who{display:flex;align-items:center;gap:5px;min-width:0}
+.who b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rack{display:flex;align-items:center;gap:4px;flex-wrap:wrap;background:#0e1729;
+  border:1px dashed #2b3d60;border-radius:8px;padding:4px 6px;margin-bottom:5px}
+.rack .lbl{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#6d82a8;margin-right:2px}
+.bobchip{display:flex;align-items:center;gap:3px;font-size:9.5px;color:#c6d6f2;
+  background:#16233c;border:1px solid #2a3c5e;border-radius:20px;padding:1px 6px 1px 2px;font-variant-numeric:tabular-nums}
+.rack .empty{font-size:9.5px;color:#5f7395}
+.linha{background:#0e1729;border:1px solid #23324f;border-radius:10px;padding:6px;margin-bottom:5px;transition:border-color .3s}
+.linha.active{border-color:rgba(245,165,36,.4);box-shadow:0 0 12px rgba(245,165,36,.15) inset}
+.linha.stock-active{border-color:rgba(63,140,255,.5);box-shadow:0 0 12px rgba(63,140,255,.2) inset}
+.linha.broken{border-color:rgba(255,95,109,.55);animation:brokenShake .5s infinite}
+@keyframes brokenShake{25%{transform:translateX(-1px)}75%{transform:translateX(1px)}}
+.linha .lh{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;gap:4px;flex-wrap:wrap}
+.linha .nm{font-size:10px;font-weight:700;letter-spacing:.3px;color:#a9bde0;text-transform:uppercase}
+.machine{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.coilwrap{width:56px;height:56px;flex:0 0 auto;position:relative;display:grid;place-items:center}
+.coilwrap svg{width:56px;height:56px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+.coilwrap.spinning svg{animation:coilSpin 2s linear infinite}
+@keyframes coilSpin{to{transform:rotate(360deg)}}
+.strip{flex:1;height:7px;border-radius:3px;position:relative;overflow:hidden;background:#101a2c;border:1px solid #1d2b47}
+.strip i{position:absolute;inset:0;opacity:.22;background:repeating-linear-gradient(90deg,#8aa0c8 0 7px,#5f7395 7px 14px)}
+.strip.on i{opacity:.95;animation:stripMove .6s linear infinite}
+@keyframes stripMove{to{background-position:14px 0}}
+.press{width:36px;height:24px;flex:0 0 auto;border-radius:5px;border:1px solid #33486e;
+  background:linear-gradient(180deg,#2b3d5e,#1a2740);position:relative;display:grid;place-items:center;
+  font-size:7px;color:#8fa5c9;letter-spacing:.3px}
+.press.active{border-color:rgba(245,165,36,.6);box-shadow:0 0 14px rgba(245,165,36,.5)}
+.press.stock-on{border-color:rgba(63,140,255,.6);box-shadow:0 0 14px rgba(63,140,255,.5)}
+.truck{display:flex;align-items:center;gap:6px;background:#0e1729;border:1px solid #23324f;
+  border-radius:9px;padding:4px 6px;margin-bottom:4px;transition:border-color .3s}
+.truck.moving{border-color:rgba(47,211,155,.4)}
+.truck .truckSVG{width:48px;height:26px;flex:0 0 auto}
+.truck.moving .truckSVG{animation:truckBounce .4s ease-in-out infinite}
+@keyframes truckBounce{50%{transform:translateY(-1px)}}
+.truck.idle .truckSVG{opacity:.6}
+.truck .info{flex:1;min-width:0}
+.truck .info b{font-size:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.road{height:3px;border-radius:3px;background:repeating-linear-gradient(90deg,#24354f 0 8px,transparent 8px 16px);margin-top:3px;position:relative;overflow:hidden}
+.truck.moving .road{animation:roadMove .5s linear infinite}
+@keyframes roadMove{to{background-position:16px 0}}
+.road i{position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,#2fd39b,#7ef7c8);transition:width .15s linear}
+.group{margin-bottom:4px}
+.group-head{display:flex;justify-content:space-between;align-items:center;gap:4px;
+  font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#8fa5c9;
+  padding:2px;border-bottom:1px solid #1d2b47;margin-bottom:3px}
+.group-head b{color:#ffd27a;font-size:9px}
+.estoque-item{background:#101c30;border:1px solid #23324f;border-radius:8px;padding:4px 6px;margin-bottom:3px}
+.estado-vazio{color:#5d7194;font-size:10px;text-align:center;padding:10px 5px;
+  border:1px dashed #24354f;border-radius:8px;background:rgba(255,255,255,.012)}
+.bottom{display:grid;grid-template-columns:1fr 1fr .8fr .85fr .9fr;gap:9px;align-items:start}
+.panel{background:linear-gradient(180deg,rgba(24,36,60,.95),rgba(14,21,36,.95));
+  border:1px solid var(--line);border-radius:12px;padding:9px;box-shadow:var(--shadow);min-width:0}
+.panel h2{margin:0 0 6px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#b9c9e6}
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px}
+.up{background:linear-gradient(180deg,#18243d,#131d32);border:1px solid var(--line);border-radius:9px;
+  padding:6px 7px;display:flex;flex-direction:column;gap:2px}
+.up b{font-size:11px}
+.up small{font-size:9.5px;color:#8ba0c4;line-height:1.25}
+.up .cost{font-size:10.5px;font-weight:800;color:#ffca63;font-variant-numeric:tabular-nums}
+.up .btn{width:100%;margin-top:1px;font-size:10px;padding:2px 5px}
+.up.max{opacity:.55}
+.emp-card{background:#101c30;border:1px solid #22314e;border-radius:8px;padding:5px 7px;margin-bottom:4px;
+  display:flex;align-items:center;gap:6px}
+.emp-card .icon{font-size:16px;flex:0 0 auto}
+.emp-card .info{flex:1;min-width:0}
+.emp-card b{font-size:10.5px;display:block}
+.emp-card small{font-size:9px;color:#8ba0c4}
+.emp-hire{background:linear-gradient(180deg,#18243d,#131d32);border:1px solid var(--line);
+  border-radius:8px;padding:5px 7px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.emp-hire .icon{font-size:16px}
+.emp-hire .info{flex:1;min-width:0}
+.emp-hire b{font-size:10.5px;display:block}
+.emp-hire small{font-size:9px;color:#8ba0c4;display:block}
+.emp-hire .sal{font-size:9.5px;font-weight:800;color:#ffca63}
+.obra-card{background:linear-gradient(180deg,#1a2340,#101a2e);border:1px solid rgba(63,140,255,.4);
+  border-radius:9px;padding:6px 8px;margin-bottom:4px}
+.obra-card .ttl{display:flex;justify-content:space-between;align-items:center;gap:5px;margin-bottom:3px}
+.obra-card b{font-size:11px}
+.obra-needs{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.obra-need{font-size:9px;padding:2px 5px;border-radius:4px;background:#0d1727;
+  border:1px solid #2a3c5e;color:#a9bde0;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:3px}
+.obra-need.ok{background:rgba(47,211,155,.14);border-color:rgba(47,211,155,.4);color:#63f0c0}
+.obra-need.falta{background:rgba(255,95,109,.1);border-color:rgba(255,95,109,.35);color:#ffb3ba}
+.mat-row{display:flex;align-items:center;gap:8px;background:#101c30;border:1px solid #22314e;
+  border-radius:8px;padding:6px 8px;margin-bottom:4px}
+.mat-row .icon{font-size:18px;flex:0 0 auto;width:24px;text-align:center}
+.mat-row .info{flex:1;min-width:0}
+.mat-row b{font-size:11px;display:block}
+.mat-row small{font-size:9.5px;color:#8ba0c4;font-variant-numeric:tabular-nums}
+.mat-row .stock{font-size:10px;font-weight:800;color:#9ec7ff;text-align:right;min-width:80px;font-variant-numeric:tabular-nums}
+.mat-row .stock b{font-size:11px;color:#7ef7c8}
+.mat-sel{width:100%;background:#0d1727;border:1px solid #2a3c5e;color:#cfe0ff;border-radius:6px;
+  padding:6px 8px;font-size:12px;font-family:inherit;cursor:pointer;outline:none;margin-bottom:8px}
+.mat-sel:focus{border-color:rgba(245,165,36,.5)}
+.mat-detalhe{background:#0d1727;border:1px solid #1f2d47;border-radius:8px;padding:9px 11px;margin-bottom:8px}
+.mat-detalhe .nome{font-size:13px;font-weight:800;color:#e9effb;margin-bottom:3px}
+.mat-detalhe .l1{display:flex;justify-content:space-between;font-size:11px;color:#8ba0c4}
+.mat-detalhe .l1 b{color:#ffca63;font-variant-numeric:tabular-nums}
+.qty-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.qty-row input[type=number]{background:#0d1727;border:1px solid #2a3c5e;color:#cfe0ff;border-radius:6px;
+  padding:5px 8px;font-size:12px;width:100px;font-family:inherit;outline:none;font-variant-numeric:tabular-nums}
+.qty-row input[type=number]:focus{border-color:rgba(245,165,36,.5)}
+.mat-total{background:linear-gradient(180deg,#1a2740,#0d1727);border:1px solid #2a3c5e;border-radius:8px;
+  padding:8px 11px;font-size:12px;font-variant-numeric:tabular-nums}
+.mat-total b{color:#7ef7c8;font-size:14px}
+.armazem-box{background:#0d1727;border:1px solid #1f2d47;border-radius:8px;padding:9px 11px;margin-bottom:10px}
+.armazem-box .head{display:flex;justify-content:space-between;font-size:11px;color:#8ba0c4;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.armazem-box .head b{color:#9ec7ff;font-variant-numeric:tabular-nums;font-size:11.5px}
+.armazem-box .head b.warn{color:#ffbb33}
+.armazem-box .head b.full{color:#ff5f6d}
+.galpao-card{background:#101c30;border:1px solid #22314e;border-radius:8px;padding:7px 9px;margin-bottom:4px;
+  display:flex;align-items:center;gap:8px}
+.galpao-card .icon{font-size:18px;flex:0 0 auto}
+.galpao-card .info{flex:1;min-width:0}
+.galpao-card b{font-size:11px;display:block}
+.galpao-card small{font-size:9.5px;color:#8ba0c4}
+.galpao-card .owned{font-size:10px;font-weight:800;color:#9ec7ff;font-variant-numeric:tabular-nums}
+.galpao-card.owned-max{opacity:.55}
+.res{display:flex;flex-direction:column;gap:2px;font-size:10.5px}
+.res .r{display:flex;justify-content:space-between;gap:6px;padding:2px 0;border-bottom:1px dashed rgba(255,255,255,.05)}
+.res .r:last-child{border-bottom:none}
+.res .r span{color:#8ba0c4}
+.res .r b{font-variant-numeric:tabular-nums;color:#d9e6fb}
+.res .r.total{padding-top:4px;margin-top:2px;border-top:1px solid #2a3c5e}
+.res .r.total b{font-size:12px}
+.log{max-height:170px;overflow:auto;display:flex;flex-direction:column;gap:3px;font-size:10px;padding-right:2px}
+.log div.p{padding:3px 5px;border-radius:5px;background:rgba(255,255,255,.03);border-left:3px solid #2f446b;
+  color:#b9caea;animation:logIn .3s ease both}
+@keyframes logIn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
+.log div.p.bad{border-left-color:var(--bad);color:#ffc2c6;background:rgba(255,95,109,.08)}
+.log div.p.good{border-left-color:var(--ok);color:#b6f7de;background:rgba(47,211,155,.08)}
+.log div.p.money{border-left-color:var(--accent);color:#ffe0a8;background:rgba(245,165,36,.08)}
+.log .t{color:#61779b;font-size:9px;margin-right:3px}
+#toasts{position:fixed;right:14px;bottom:14px;display:flex;flex-direction:column;gap:6px;z-index:60;max-width:320px}
+.toast{background:linear-gradient(180deg,#1d2c48,#131f36);border:1px solid #34507a;border-left:4px solid var(--accent);
+  border-radius:9px;padding:8px 12px;font-size:11.5px;box-shadow:0 10px 26px rgba(0,0,0,.5);
+  animation:slidein .25s ease both}
+.toast.bad{border-left-color:var(--bad)}
+.toast.good{border-left-color:var(--ok)}
+@keyframes slidein{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.cash-popup{position:fixed;font-weight:800;font-size:14px;pointer-events:none;z-index:100;
+  text-shadow:0 2px 6px rgba(0,0,0,.7);animation:cashFloat 1.6s cubic-bezier(.2,.7,.3,1) forwards;font-variant-numeric:tabular-nums}
+.cash-popup.positive{color:#7ef7c8}.cash-popup.negative{color:#ff8b95}
+@keyframes cashFloat{0%{transform:translateY(0) scale(.8);opacity:0}15%{transform:translateY(-8px) scale(1.15);opacity:1}100%{transform:translateY(-56px) scale(1);opacity:0}}
+.confetti{position:fixed;top:-20px;width:8px;height:14px;z-index:100;pointer-events:none;
+  animation:confettiFall linear forwards;border-radius:2px}
+@keyframes confettiFall{100%{transform:translate(var(--cx,0),110vh) rotate(720deg);opacity:0}}
+.overlay{position:fixed;inset:0;background:rgba(4,8,16,.85);backdrop-filter:blur(4px);
+  display:none;place-items:center;z-index:80;padding:16px}
+.overlay.show{display:grid}
+.modal{max-width:680px;width:100%;max-height:92vh;overflow:auto;
+  background:linear-gradient(180deg,#16223a,#0e1728);border:1px solid #2b3d5e;border-radius:16px;
+  padding:20px 22px;box-shadow:0 24px 60px rgba(0,0,0,.6);animation:pop .25s ease both}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+.modal h2{margin:0 0 4px;font-size:18px}
+.modal h3{color:#ffca63;margin:12px 0 5px;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px}
+.modal p{color:#a9bde0;font-size:12px;line-height:1.5}
+.modal ol{margin:8px 0 12px;padding-left:18px;color:#c8d8f2;font-size:12px;line-height:1.55}
+.modal ol li{margin-bottom:4px}
+.modal ol b{color:#ffca63}
+.modal .muted{color:#8ba0c4;font-size:11.5px}
+.kbd{font-family:ui-monospace,monospace;background:#0d1626;border:1px solid #2a3c5e;border-radius:4px;
+  padding:1px 5px;font-size:10.5px;color:#ffd27a}
+.rep-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px;margin:10px 0 4px}
+.rep-grid .r{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;padding:3px 0;
+  border-bottom:1px dashed rgba(255,255,255,.06)}
+.rep-grid .r span{color:#8ba0c4}
+.rep-grid .r b{font-variant-numeric:tabular-nums;color:#d9e6fb}
+.rep-grid .r.destaque b{color:#7ef7c8;font-size:13px}
+.rep-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.selo{font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:3px 8px;border-radius:20px;
+  border:1px solid #34507a;color:#9ec7ff;background:rgba(63,140,255,.12)}
+.ach-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.ach{background:#101c30;border:1px solid #22314e;border-radius:8px;padding:6px 8px;
+  display:flex;gap:6px;align-items:center;opacity:.4;transition:all .3s}
+.ach.on{opacity:1;border-color:rgba(245,165,36,.5);background:linear-gradient(180deg,#1f2a44,#152038)}
+.ach .icon{font-size:16px}
+.ach b{font-size:10.5px;display:block}
+.ach small{font-size:9px;color:#8ba0c4}
+.loan-row{background:#101c30;border:1px solid #22314e;border-radius:8px;padding:8px 10px;margin-top:4px}
+.loan-row .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.loan-row b{font-size:11.5px}
+.slider-wrap{margin-top:9px}
+.slider-wrap label{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;
+  color:#8ba0c4;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.slider-wrap label b{color:#ffca63;font-size:11px}
+.slider-wrap input[type=range]{width:100%;height:5px;border-radius:5px;background:#1a2740;outline:none;
+  -webkit-appearance:none;appearance:none;cursor:pointer}
+.slider-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:linear-gradient(180deg,#ffc14d,#e8890f);border:1px solid #ffcf7a;cursor:pointer}
+.loan-calc{margin-top:8px;padding:8px 10px;background:#0d1727;border-radius:7px;border:1px solid #1f2d47}
+.loan-calc .r{display:flex;justify-content:space-between;padding:3px 0;font-size:11px}
+.loan-calc .r span{color:#8ba0c4}
+.loan-calc .r b{font-variant-numeric:tabular-nums}
+@media (max-width:1700px){.board{grid-template-columns:1fr 1fr 1.15fr 1fr}.board>.col:nth-child(5){grid-column:1/-1}.bottom{grid-template-columns:1fr 1fr 1fr}}
+@media (max-width:1200px){.board{grid-template-columns:1fr 1fr 1fr}.board>.col:nth-child(4),.board>.col:nth-child(5){grid-column:auto}.bottom{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){.board{grid-template-columns:1fr 1fr}.bottom{grid-template-columns:1fr}}
+@media (max-width:640px){.board{grid-template-columns:1fr}.stat{min-width:calc(50% - 5px)}}
+</style>
+</head>
+<body>
+<!-- SVG LOGO OFICIAL (Recriada baseada na imagem) -->
+<svg style="display:none;">
+  <defs>
+    <linearGradient id="gearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b0b5c0"/>
+      <stop offset="50%" stop-color="#e0e5f0"/>
+      <stop offset="100%" stop-color="#9095a0"/>
+    </linearGradient>
+    <linearGradient id="roofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0f5ff"/>
+      <stop offset="50%" stop-color="#c8d0e0"/>
+      <stop offset="100%" stop-color="#909ab0"/>
+    </linearGradient>
+    <filter id="dropShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <symbol id="logo-parecis" viewBox="0 0 200 200">
+    <!-- Engrenagem Fundo -->
+    <circle cx="100" cy="100" r="90" fill="url(#gearGrad)" opacity="0.3"/>
+    <path d="M100 10 L105 25 L120 25 L125 15 L140 25 L145 40 L160 45 L155 60 L170 65 L165 80 L180 85 L175 100 L190 105 L180 120 L185 135 L170 140 L175 155 L160 160 L155 175 L140 170 L135 185 L120 180 L115 195 L100 185 L85 195 L80 180 L65 185 L60 170 L45 175 L40 160 L25 155 L30 140 L15 135 L20 120 L10 105 L25 100 L15 85 L30 80 L25 65 L40 60 L35 45 L50 40 L55 25 L70 30 L75 15 L90 25 Z" fill="url(#gearGrad)" opacity="0.4" transform="scale(0.9) translate(11 11)"/>
+    <circle cx="100" cy="100" r="60" fill="#080d18" opacity="0.6"/>
+    <circle cx="100" cy="100" r="50" fill="#e0e5f0"/>
+    <circle cx="100" cy="100" r="45" fill="#a0a5b0"/>
+    <circle cx="100" cy="100" r="30" fill="#e0e5f0"/>
+    
+    <!-- Telhado Esquerdo -->
+    <polygon points="20,130 100,60 100,130" fill="url(#roofGrad)" stroke="#0b3b6b" stroke-width="4" stroke-linejoin="round"/>
+    <!-- Telhado Direito -->
+    <polygon points="180,130 100,60 100,130" fill="url(#roofGrad)" stroke="#0b3b6b" stroke-width="4" stroke-linejoin="round"/>
+    
+    <!-- Linhas do telhado (esquerda) -->
+    <line x1="50" y1="130" x2="100" y2="80" stroke="#0b3b6b" stroke-width="2" opacity="0.6"/>
+    <line x1="70" y1="130" x2="100" y2="100" stroke="#0b3b6b" stroke-width="2" opacity="0.6"/>
+    <line x1="90" y1="130" x2="100" y2="120" stroke="#0b3b6b" stroke-width="2" opacity="0.6"/>
+    
+    <!-- Linhas do telhado (direita) -->
+    <line x1="150" y1="130" x2="100" y2="80" stroke="#0b3b6b" stroke-width="2" opacity="0.6"/>
+    <line x1="130" y1="130" x2="100" y2="100" stroke="#0b3b6b" stroke-width="2" opacity="0.6"/>
+    <line x1="110" y1="130" x2="100" y2="120" stroke="#0b3b6b" stroke-width="2" opacity="0.6"/>
+    
+    <!-- Texto -->
+    <text x="100" y="160" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="#0b3b6b" text-anchor="middle">PARECIS TELHA</text>
+    <text x="100" y="175" font-family="Arial, sans-serif" font-size="8" font-weight="600" fill="#0b3b6b" letter-spacing="2" text-anchor="middle">TELHAS GALVANIZADAS</text>
+  </symbol>
+</svg>
+
+<div id="loading-screen">
+  <div class="load-wrap">
+    <svg class="load-logo"><use href="#logo-parecis"/></svg>
+    <p class="load-sub">Simulador de Indústria & Construção</p>
+    <div class="load-bar-container"><div class="load-bar-fill" id="load-bar-fill"></div></div>
+    <p class="load-status" id="load-status">Inicializando...</p>
+    <p class="load-tip" id="load-tip">💡 Carregando dicas...</p>
+    <div class="load-buttons" id="load-buttons" style="display:none">
+      <button class="btn primary big" id="load-continue-btn">▶ Continuar</button>
+      <button class="btn big" id="load-new-btn">✨ Novo jogo</button>
+    </div>
+    <p class="load-version">v5.3 · Salva automaticamente</p>
+  </div>
+</div>
+
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo-img"><use href="#logo-parecis"/></svg>
+      <div><h1>Parecis Telha</h1><p id="relogio">Dia 1 · 07:00 · Mês 1</p></div>
+    </div>
+    <div class="stats">
+      <div class="stat money" id="stat-caixa"><span>Caixa</span><b id="st-caixa">R$ 0</b></div>
+      <div class="stat debt" data-act="banco" title="Banco"><span>Dívida 🏦</span><b id="st-divida">—</b></div>
+      <div class="stat pend"><span>A receber</span><b id="st-receber">R$ 0</b></div>
+      <div class="stat lucro"><span>Lucro</span><b id="st-lucro">R$ 0</b></div>
+      <div class="stat"><span>Aço</span><b id="st-bobinas">0 t</b></div>
+      <div class="stat arm" id="stat-arm"><span>Armazém</span><b id="st-arm">0/5k</b></div>
+      <div class="stat"><span>Reputação</span><b id="st-rep">65%</b></div>
+      <div class="stat"><span>Nível</span><b id="st-nivel">Nv 1</b></div>
+      <div class="stat"><span>Clima</span><b id="st-weather">☀️</b></div>
+      <div class="stat"><span>Equipe</span><b id="st-equipe">0</b></div>
+      <div class="stat" style="cursor:pointer" data-act="conquistas"><span>🏆</span><b id="st-achs">0/8</b></div>
+    </div>
+    <div class="ctrls">
+      <button class="btn mat-btn" data-act="materiais" title="Comprar materiais (T)">🧱 Materiais</button>
+      <button class="btn save-btn" data-act="save" title="Salvar (Ctrl+S)">💾 Salvar</button>
+      <button class="btn ghost" data-act="load" title="Carregar save">📂</button>
+      <span class="save-indicator" id="save-indicator" title=""></span>
+      <button class="btn audio" id="btn-music" data-act="music" title="Música (M)">🎵</button>
+      <button class="btn audio" id="btn-sfx" data-act="sfx" title="Efeitos (S)">🔊</button>
+      <button class="btn ghost" data-act="relatorio">Relatório</button>
+      <button class="btn ghost" data-act="ajuda">Ajuda</button>
+      <button class="btn ghost" id="btn-pausa" data-act="pausa">Pausar</button>
+      <button class="btn ghost" id="btn-vel" data-act="vel">1×</button>
+      <button class="btn ghost" data-act="reset">⟲</button>
+    </div>
+  </header>
+
+  <main class="board">
+    <section class="col">
+      <div class="col-head"><h2><span class="num">1</span> Balcão</h2><span class="badge" id="badge-clientes">0</span></div>
+      <p class="hint">Clientes pedem telhas/estruturas ou materiais.</p>
+      <div class="list" id="lista-clientes"></div>
+    </section>
+    <section class="col">
+      <div class="col-head"><h2><span class="num">2</span> Pedidos</h2><span class="badge" id="badge-pedidos">0</span></div>
+      <p class="hint">Fila de produção.</p>
+      <div class="list" id="lista-pedidos"></div>
+    </section>
+    <section class="col">
+      <div class="col-head"><h2><span class="num">3</span> Produção</h2><span class="badge" id="badge-linhas">0</span></div>
+      <div class="rack" id="rack"></div>
+      <div class="list" id="lista-linhas"></div>
+    </section>
+    <section class="col">
+      <div class="col-head"><h2><span class="num">4</span> Expedição</h2><span class="badge" id="badge-estoque">0</span></div>
+      <div class="list" id="lista-caminhoes"></div>
+      <div class="list" id="lista-entregas-mat" style="margin-top:5px"></div>
+      <div class="list" id="lista-estoque" style="margin-top:5px"></div>
+    </section>
+    <section class="col">
+      <div class="col-head"><h2><span class="num">5</span> Obras</h2><span class="badge" id="badge-obras">0</span></div>
+      <p class="hint">Junte os materiais no estoque e construa.</p>
+      <div class="list" id="lista-obras"></div>
+    </section>
+  </main>
+
+  <div class="bottom">
+    <section class="panel"><h2>Loja & Melhorias</h2><div class="shop" id="shop"></div></section>
+    <section class="panel"><h2>Estoque de Materiais</h2><div id="mat-panel"></div></section>
+    <section class="panel"><h2>Equipe</h2><div id="equipe"></div></section>
+    <section class="panel"><h2>Resultado</h2><div id="resultados"></div></section>
+    <section class="panel"><h2>Registro</h2><div class="log" id="log"></div></section>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2>🏭 Parecis Telha — Do zero ao topo</h2>
+    <p>Você começa com <b style="color:#ff8b95">R$ 8.000</b>, uma perfiladeira <b>Xingling 200</b> e uma <b>F-4000</b> velha.</p>
+    <ol>
+      <li><b>Balcão</b> — atenda pedidos de telhas e materiais.</li>
+      <li><b>Produção</b> — fabrique telhas, estruturas <b>ou tijolos/blocos</b> selecionando na linha.</li>
+      <li><b>Estoque</b> — Você pode fabricar <b>de 1 a 5000 unidades diretamente para o estoque</b> sem cliente!</li>
+      <li><b>Materiais 🧱</b> — compre cimento, areia, etc. em massa.</li>
+      <li><b>Armazém</b> — espaço limitado. Compre <b>galpões</b> para expandir.</li>
+      <li><b>Obras</b> — projetos grandes. A lista mostra <b>exatamente o nome e a quantidade</b> de cada item necessário.</li>
+    </ol>
+    <p class="muted">Atalhos: <span class="kbd">Espaço</span> pausa · <span class="kbd">1</span>/<span class="kbd">2</span>/<span class="kbd">3</span> vel · <span class="kbd">M</span> música · <span class="kbd">S</span> efeitos · <span class="kbd">B</span> banco · <span class="kbd">T</span> materiais · <span class="kbd">Ctrl+S</span> salvar</p>
+    <button class="btn primary big" data-act="fechar-ajuda" style="margin-top:8px;width:100%">Aceitar o desafio 🏦</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay-rel"><div class="modal"><div id="rel-body"></div>
+  <button class="btn primary big" data-act="fechar-relatorio" style="margin-top:14px;width:100%">Voltar</button></div></div>
+
+<div class="overlay" id="overlay-reset"><div class="modal">
+  <h2>Recomeçar?</h2>
+  <p class="muted">Todo o progresso será perdido. O save também será apagado.</p>
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button class="btn big" style="flex:1" id="btn-cancelar-reset">Cancelar</button>
+    <button class="btn primary big" style="flex:1" id="btn-confirmar-reset">Recomeçar</button>
+  </div>
+</div></div>
+
+<div class="overlay" id="overlay-achs"><div class="modal">
+  <h2>🏆 Conquistas</h2>
+  <p class="muted" id="achs-progresso"></p>
+  <div class="ach-list" id="achs-list"></div>
+  <button class="btn primary big" data-act="fechar-conquistas" style="margin-top:14px;width:100%">Voltar</button>
+</div></div>
+
+<div class="overlay" id="overlay-banco"><div class="modal">
+  <h2>🏦 Banco</h2>
+  <p class="muted">Parcelas descontadas todo dia 30. Não pagar = mora 5% + rep −5.</p>
+  <div id="bank-content"></div>
+  <button class="btn primary big" data-act="fechar-banco" style="margin-top:14px;width:100%">Voltar</button>
+</div></div>
+
+<div class="overlay" id="overlay-materiais"><div class="modal">
+  <h2>🧱 Materiais & Armazém</h2>
+  <div class="armazem-box">
+    <div class="head"><span>Ocupação do Armazém</span><b id="arm-uso">0 / 5.000 un</b></div>
+    <div class="bar arm"><i id="arm-bar" style="width:0%"></i></div>
+    <div class="tiny" style="margin-top:5px"><span>Base: 5.000 un</span><span id="arm-galpoes">0 galpões</span></div>
+  </div>
+  <h3>Comprar materiais</h3>
+  <select id="mat-sel" class="mat-sel"></select>
+  <div class="mat-detalhe" id="mat-detalhe"></div>
+  <div class="qty-row">
+    <button class="btn mini" data-act="mat-add" data-qty="100">+100</button>
+    <button class="btn mini" data-act="mat-add" data-qty="500">+500</button>
+    <button class="btn mini" data-act="mat-add" data-qty="1000">+1000</button>
+    <button class="btn mini" data-act="mat-add" data-qty="5000">+5000</button>
+    <button class="btn mini" data-act="mat-add" data-qty="-1">Limpar</button>
+    <input type="number" id="mat-qty-inp" value="100" min="1" max="99999">
+  </div>
+  <div class="mat-total" id="mat-total">Total: <b>R$ 90</b></div>
+  <button class="btn primary big" data-act="mat-comprar" style="width:100%;margin-top:8px">Comprar</button>
+  <h3>Galpões (aumentar armazém)</h3>
+  <div id="galpoes-list"></div>
+  <button class="btn primary big" data-act="fechar-materiais" style="width:100%;margin-top:14px">Fechar</button>
+</div></div>
+
+<script>
+/* ============================================================
+   PARECIS TELHA — v5.3 (fab. para estoque 1-5000 + salva progresso parcial)
+   ============================================================ */
+const SAVE_KEY='parecis_telha_v53';
+const SAVE_VERSION=1;
+
+const PRODUCTS={
+  telha_trap:{nome:'Telha Trap 40',cat:'telha',kgm:4.8,preco:34,vel:1.00,icon:'🏠'},
+  telha_onda:{nome:'Telha Ond 17',cat:'telha',kgm:5.2,preco:31,vel:1.15,icon:'🏠'},
+  cumeeira:{nome:'Cumeeira',cat:'telha',kgm:3.9,preco:48,vel:1.40,icon:'🏠'},
+  tijolo8:{nome:'Tijolo 8 furos',cat:'mat',kgm:2.2,preco:1.40,vel:2.50,icon:'🧱'},
+  bloco:{nome:'Bloco concreto',cat:'mat',kgm:4.5,preco:3.20,vel:1.80,icon:'🧱'},
+  cantoneira:{nome:'Cantoneira 3/4',cat:'estrutura',kgm:6.5,preco:32,vel:0.85,icon:'📐'},
+  barra_chata:{nome:'Barra Chata 1/8',cat:'estrutura',kgm:4.0,preco:28,vel:1.10,icon:'📏'},
+  trelica:{nome:'Treliça',cat:'estrutura',kgm:7.2,preco:56,vel:0.70,icon:'🔺'},
+  coluna:{nome:'Coluna U',cat:'estrutura',kgm:9.5,preco:68,vel:0.60,icon:'🏗️'}
+};
+const ORDEM_PRODUTOS=['telha_trap','telha_onda','cumeeira','tijolo8','bloco','cantoneira','barra_chata','trelica','coluna'];
+
+const MATERIAIS={
+  tijolo8:{nome:'Tijolo 8 furos',icon:'🧱',preco:0.90,peso:1,cat:'tijolo'},
+  tijolo_m:{nome:'Tijolo maciço',icon:'🧱',preco:1.40,peso:1,cat:'tijolo'},
+  bloco:{nome:'Bloco concreto',icon:'🧱',preco:2.50,peso:1,cat:'tijolo'},
+  cimento:{nome:'Cimento 50kg',icon:'🛢️',preco:35,peso:2,cat:'cimento'},
+  argamassa:{nome:'Argamassa AC-II',icon:'🛢️',preco:22,peso:2,cat:'cimento'},
+  areia:{nome:'Areia média',icon:'⛰️',preco:120,peso:5,cat:'agregado'},
+  brita:{nome:'Brita 1',icon:'⛰️',preco:130,peso:5,cat:'agregado'},
+  tinta:{nome:'Tinta acrílica 18L',icon:'🎨',preco:180,peso:3,cat:'acabamento'},
+  rejunte:{nome:'Rejunte 5kg',icon:'🎨',preco:15,peso:1,cat:'acabamento'},
+  imperm:{nome:'Impermeabilizante',icon:'🧪',preco:95,peso:3,cat:'acabamento'}
+};
+const ORDEM_MATERIAIS=Object.keys(MATERIAIS);
+
+const GALPOES=[
+  {key:'g_p',nome:'Galpão Pequeno',cap:10000,custo:25000,icon:'🏚️',max:3},
+  {key:'g_m',nome:'Galpão Médio',cap:25000,custo:55000,icon:'🏭',max:2},
+  {key:'g_g',nome:'Galpão Grande',cap:50000,custo:110000,icon:'🏭',max:2},
+  {key:'g_i',nome:'Galpão Industrial',cap:150000,custo:280000,icon:'🏗️',max:1}
+];
+
+const BUILDINGS={
+  galpao_p:{nome:'Galpão Pequeno',desc:'100 m² para oficina',horas:8,valor:18000,
+    needs:{telha_trap:120,cantoneira:80,trelica:30,tijolo8:500,cimento:30}},
+  casa_p:{nome:'Casa Popular',desc:'60 m² residencial',horas:12,valor:32000,
+    needs:{telha_trap:90,trelica:40,cantoneira:60,barra_chata:30,tijolo8:2000,cimento:80,areia:8}},
+  galpao_g:{nome:'Galpão Industrial',desc:'500 m² estrutura completa',horas:24,valor:95000,
+    needs:{telha_trap:600,cantoneira:400,trelica:150,coluna:60,tijolo8:5000,cimento:200,areia:15,brita:10}},
+  casa_luxo:{nome:'Casa Alto Padrão',desc:'200 m² de luxo',horas:36,valor:145000,
+    needs:{telha_trap:280,trelica:120,cantoneira:200,barra_chata:100,coluna:40,tijolo8:4000,cimento:150,areia:12,tinta:8,rejunte:20}}
+};
+
+const MACHINE_BRANDS=[
+  {nome:'Xingling 200',vel:280,desg:0.075,manut:380,cor:'#888'},
+  {nome:'Metalúrgica BR 300',vel:390,desg:0.055,manut:280,cor:'#aab'},
+  {nome:'Perfilmax 450',vel:490,desg:0.040,manut:210,cor:'#7ef7c8'},
+  {nome:'Drechsel 600',vel:620,desg:0.028,manut:160,cor:'#9ec7ff'},
+  {nome:'Gasparini 850',vel:800,desg:0.020,manut:120,cor:'#ffd27a'}
+];
+const TRUCK_BRANDS=[
+  {nome:'F-4000',cap:500,durMin:3.0,durMax:4.0,cor:'#888',cor2:'#666'},
+  {nome:'VW 8-150',cap:800,durMin:2.5,durMax:3.2,cor:'#aab',cor2:'#889'},
+  {nome:'VW 11-180',cap:1200,durMin:2.0,durMax:2.8,cor:'#7ef7c8',cor2:'#4aa'},
+  {nome:'Volvo VM 220',cap:1600,durMin:1.6,durMax:2.2,cor:'#9ec7ff',cor2:'#5aa'},
+  {nome:'Scania R450',cap:2200,durMin:1.2,durMax:1.7,cor:'#ffd27a',cor2:'#a85'}
+];
+
+const EMPLOYEE_TYPES={
+  vendedor:{nome:'Vendedor',salario:3800,desc:'+25% chegada de clientes',icon:'💼'},
+  operador:{nome:'Operador',salario:3200,desc:'Opera linha sozinho',icon:'🔧'},
+  motorista:{nome:'Motorista',salario:2800,desc:'Dirige caminhão sozinho',icon:'🚛'},
+  gerente:{nome:'Gerente',salario:8500,desc:'Auto-reserva obras, acelera',icon:'👔',unique:true}
+};
+
+const NOMES=['Construtora Vale Verde','Sr. Antônio','Galpão São Jorge','Fazenda Boa Vista',
+  'Mercado Dois Irmãos','Serralheria Cruzeiro','Prefeitura — creche','Irmãos Barbosa',
+  'Supermercado Ideal','Condomínio Alto da Serra','Oficina do Nelsinho','Distribuidora Ponto Certo',
+  'Sítio Recanto','Madeireira Três Pinheiros','Construtora Horizonte','Grupo Andrade',
+  'Incorporadora Sul','Loteamento Jardim','Pousada do Vale','Hospital São Lucas'];
+const EMP_NOMES=['Carlos','José','Maria','Pedro','Ana','João','Luiza','Felipe','Bruna','Ricardo',
+  'Sandra','Marcos','Patrícia','Roberto','Camila','Anderson','Juliana','Wagner','Débora','Cláudio'];
+
+const clamp=(v,a,b)=>v<a?a:(v>b?b:v);
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const rint=(a,b)=>Math.floor(rnd(a,b+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const fmtMoney=v=>'R$ '+Math.round(v).toLocaleString('pt-BR');
+const fmtNum=v=>Math.round(v).toLocaleString('pt-BR');
+const fmtT=kg=>(kg/1000).toFixed(2).replace('.',',')+' t';
+const fmtHora=h=>{h=((h%24)+24)%24;const hh=Math.floor(h),mm=Math.floor((h-hh)*60);
+  return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')};
+
+const MES_HORAS=720;
+const WEATHERS={
+  sunny:{icon:'☀️',label:'Ensolarado',demand:1.25,speed:1.00},
+  cloudy:{icon:'☁️',label:'Nublado',demand:1.00,speed:1.00},
+  rain:{icon:'🌧️',label:'Chuva',demand:0.70,speed:0.95},
+  storm:{icon:'⛈️',label:'Tempestade',demand:0.40,speed:0.82}
+};
+const EVENTOS=[
+  {msg:'Aço +30%!',apply:()=>{S.acoMult=1.30;S.acoMultDur=24}},
+  {msg:'Oferta de aço −20%',apply:()=>{S.acoMult=0.80;S.acoMultDur=24}},
+  {msg:'Boom! +2 clientes',apply:()=>{chegaCliente();chegaCliente()}},
+  {msg:'Taxa: −R$ 3.500',apply:()=>{S.caixa-=3500;cashPopup(-3500)}},
+  {msg:'Bônus! +R$ 8.000',apply:()=>{S.caixa+=8000;cashPopup(8000)}},
+  {msg:'Reportagem! Rep +8',apply:()=>{S.rep=Math.min(100,S.rep+8)}},
+  {msg:'Técnico gratuito',apply:()=>{S.linhas.forEach(l=>l.desgaste=Math.max(0,l.desgaste-30))}}
+];
+const ACHS=[
+  {id:'first_sale',icon:'💼',nome:'Primeira venda',desc:'Fature 1º pedido',check:()=>S.faturamento>0},
+  {id:'10k',icon:'💵',nome:'R$ 10k',desc:'Faturamento ≥ R$ 10.000',check:()=>S.faturamento>=10000},
+  {id:'100k',icon:'💰',nome:'Centenário',desc:'≥ R$ 100.000',check:()=>S.faturamento>=100000},
+  {id:'1m',icon:'👑',nome:'Milionário',desc:'≥ R$ 1.000.000',check:()=>S.faturamento>=1000000},
+  {id:'first_obra',icon:'🏗️',nome:'Primeira Obra',desc:'Conclua 1 construção',check:()=>S.stats.obrasConcluidas>=1},
+  {id:'10del',icon:'🚚',nome:'Entregador',desc:'10 viagens',check:()=>S.stats.viagens>=10},
+  {id:'manager',icon:'👔',nome:'Boa Gestão',desc:'Contrate um gerente',check:()=>S.employees.some(e=>e.tipo==='gerente')},
+  {id:'brand_max',icon:'⭐',nome:'Top de linha',desc:'Máquina Gasparini',check:()=>S.linhas.some(l=>l.brand>=4)}
+];
+
+const S={
+  t:7,speed:1,paused:false,started:false,seq:1,
+  caixa:8000,faturamento:0,rep:65,
+  clientes:[],pedidos:[],estoque:{},estoqueValores:{},estoqueMateriais:{},
+  entregasPendentes:[],galpoes:[],bobinas:[],caminhoes:[],linhas:[],obras:[],employees:[],
+  loans:[],proxCliente:2.5,proxEvento:36,proxWeather:8,proxObra:15,
+  weather:'sunny',acoMult:1,acoMultDur:0,fieis:{},
+  fin:{receita:0,custoAco:0,manutencoes:0,multas:0,investimento:0,salarios:0,juros:0,custoMateriais:0},
+  historico:[],mesIdx:0,lastLevel:1,
+  up:{nova_linha:0,up_linhas:0,novo_caminhao:0,up_frota:0,marketing:0,troca:0,aco:0},
+  stats:{metros:0,refugo:0,viagens:0,atrasos:0,recusas:0,negociacoes:0,manutencoes:0,
+    premium:0,obrasConcluidas:0,emprestimos:0,materiaisComprados:0},
+  achs:{}
+};
+const MAXCLIENTES=4;
+const novoId=()=>S.seq++;
+
+/* ============================================================
+   SISTEMA DE SAVE
+   ============================================================ */
+let lastSaveTime=0;let autoSaveTimer=null;
+function saveGame(silent){
+  if(!S.started){if(!silent)toast('Jogo ainda não começou','bad');return false;}
+  try{
+    const save={version:SAVE_VERSION,timestamp:Date.now(),S:JSON.parse(JSON.stringify(S))};
+    localStorage.setItem(SAVE_KEY,JSON.stringify(save));
+    lastSaveTime=Date.now();updateSaveIndicator();
+    if(!silent){toast('💾 Jogo salvo!','good');snd.ding();flashSaveIndicator();}
+    return true;
+  }catch(e){console.error(e);if(!silent)toast('Erro ao salvar','bad');return false;}
+}
+function loadGame(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw)return false;
+    const data=JSON.parse(raw);
+    if(!data.S||data.version!==SAVE_VERSION)return false;
+    Object.keys(data.S).forEach(k=>{if(data.S[k]!==undefined)S[k]=data.S[k];});
+    if(!S.estoque)S.estoque={};
+    if(!S.estoqueValores)S.estoqueValores={};
+    if(!S.estoqueMateriais)S.estoqueMateriais={};
+    if(!S.entregasPendentes)S.entregasPendentes=[];
+    if(!S.galpoes)S.galpoes=[];
+    if(!S.employees)S.employees=[];
+    if(!S.loans)S.loans=[];
+    if(!S.obras)S.obras=[];
+    if(!S.clientes)S.clientes=[];
+    if(!S.pedidos)S.pedidos=[];
+    if(!S.linhas)S.linhas=[];
+    if(!S.caminhoes)S.caminhoes=[];
+    if(!S.bobinas)S.bobinas=[];
+    if(!S.fieis)S.fieis={};
+    if(!S.achs)S.achs={};
+    if(!S.stats)S.stats={metros:0,refugo:0,viagens:0,atrasos:0,recusas:0,negociacoes:0,manutencoes:0,premium:0,obrasConcluidas:0,emprestimos:0,materiaisComprados:0};
+    S.paused=false;S.started=true;lastSaveTime=data.timestamp||Date.now();
+    const sel=document.getElementById('mat-sel');
+    if(sel)sel.innerHTML=ORDEM_MATERIAIS.map(k=>'<option value="'+k+'">'+MATERIAIS[k].icon+' '+MATERIAIS[k].nome+' · '+fmtMoney(MATERIAIS[k].preco)+'</option>').join('');
+    document.getElementById('btn-pausa').textContent='Pausar';
+    updateSaveIndicator();initAudio();resumeCtx();
+    if(Audio.musicOn)startMusic();
+    return true;
+  }catch(e){console.error(e);return false;}
+}
+function deleteSave(){try{localStorage.removeItem(SAVE_KEY);lastSaveTime=0;updateSaveIndicator();}catch(e){}}
+function hasSave(){try{return !!localStorage.getItem(SAVE_KEY);}catch(e){return false;}}
+function updateSaveIndicator(){
+  const el=document.getElementById('save-indicator');if(!el)return;
+  if(!lastSaveTime){el.textContent='';el.title='';return;}
+  const ago=Math.floor((Date.now()-lastSaveTime)/1000);
+  el.textContent=ago<4?'💾':'';el.title='Salvo '+(ago<60?ago+'s atrás':Math.floor(ago/60)+'min atrás');
+}
+function flashSaveIndicator(){
+  const el=document.getElementById('save-indicator');if(!el)return;
+  el.classList.add('saving');el.textContent='💾';
+  setTimeout(()=>el.classList.remove('saving'),800);
+}
+setInterval(updateSaveIndicator,5000);
+function startAutoSave(){
+  if(autoSaveTimer)return;
+  autoSaveTimer=setInterval(()=>{if(S.started&&!S.paused)saveGame(true);},30000);
+}
+
+/* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+function startLoadingScreen(){
+  const bar=document.getElementById('load-bar-fill'),status=document.getElementById('load-status');
+  const tip=document.getElementById('load-tip'),buttons=document.getElementById('load-buttons');
+  if(!bar)return;
+  const tips=['💡 Compre materiais em massa para economizar tempo!','⭐ Clientes VIP pagam até 44% a mais','🔧 Mantenha os rolos abaixo de 70% para evitar quebras','🏭 Galpões expandem seu armazém em até 500 mil unidades','🏦 Empréstimos têm juros compostos — cuidado!','🏗️ Obras grandes pagam muito bem quando concluídas','👔 Gerente automatiza tarefas e acelera obras','📈 Reputação alta = preços melhores dos clientes','🚛 Caminhões e máquinas evoluem com upgrades','💾 O jogo salva automaticamente a cada 30 segundos'];
+  const msgs=['Carregando sistemas...','Inicializando fábrica...','Verificando estoque...','Contratando operadores...','Ligando as máquinas...','Aquecendo perfiladeiras...','Pronto!'];
+  let progress=0,tipIdx=Math.floor(Math.random()*tips.length),msgIdx=0;
+  tip.textContent=tips[tipIdx];status.textContent=msgs[0];
+  const interval=setInterval(()=>{
+    progress+=Math.random()*14+5;if(progress>100)progress=100;
+    bar.style.width=progress+'%';
+    if(Math.random()<0.4&&msgIdx<msgs.length-1){msgIdx++;status.textContent=msgs[msgIdx];}
+    if(Math.random()<0.2){tipIdx=(tipIdx+1)%tips.length;tip.textContent=tips[tipIdx];}
+    if(progress>=100){
+      clearInterval(interval);status.textContent='Pronto!';
+      const continueBtn=document.getElementById('load-continue-btn'),newBtn=document.getElementById('load-new-btn');
+      if(hasSave()){continueBtn.style.display='block';newBtn.textContent='🔄 Novo jogo';}
+      else{continueBtn.style.display='none';newBtn.textContent='✨ Começar';}
+      buttons.style.display='flex';
+    }
+  },180);
+}
+function hideLoadingScreen(){
+  const ls=document.getElementById('loading-screen');if(!ls)return;
+  ls.classList.add('hidden');setTimeout(()=>{ls.style.display='none';},700);
+}
+
+/* ============================================================
+   ÁUDIO
+   ============================================================ */
+const Audio={ctx:null,master:null,music:null,sfx:null,ready:false,musicOn:true,sfxOn:true,
+  masterVol:0.8,musicVol:0.40,sfxVol:0.70,playing:false,step:0,nextTime:0,timer:null,bpm:84,STEPS:32};
+function initAudio(){
+  if(Audio.ready)return;
+  try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+    Audio.ctx=new C();
+    Audio.master=Audio.ctx.createGain();Audio.master.gain.value=Audio.masterVol;Audio.master.connect(Audio.ctx.destination);
+    Audio.music=Audio.ctx.createGain();Audio.music.gain.value=Audio.musicOn?Audio.musicVol:0;Audio.music.connect(Audio.master);
+    Audio.sfx=Audio.ctx.createGain();Audio.sfx.gain.value=Audio.sfxOn?Audio.sfxVol:0;Audio.sfx.connect(Audio.master);
+    Audio.ready=true;
+  }catch(e){}
+}
+function resumeCtx(){if(Audio.ctx&&Audio.ctx.state==='suspended')Audio.ctx.resume();}
+const NOTE={A2:110,F2:87.31,G2:98,E2:82.41,C3:130.81,E3:164.81,F3:174.61,G3:196,A3:220,B3:246.94,
+  C4:261.63,D4:293.66,E4:329.63,G4:392,A4:440,C5:523.25,D5:587.33,E5:659.25,G5:783.99,A5:880};
+const MUSIC={
+  bass:{0:NOTE.A2,4:NOTE.A2,8:NOTE.F2,12:NOTE.F2,16:NOTE.G2,20:NOTE.G2,24:NOTE.E2,28:NOTE.E2},
+  pad:{0:[NOTE.A3,NOTE.C4,NOTE.E4],8:[NOTE.F3,NOTE.A3,NOTE.C4],16:[NOTE.G3,NOTE.B3,NOTE.D4],24:[NOTE.E3,NOTE.G3,NOTE.B3]},
+  melody:{1:{f:NOTE.E5,d:0.45},3:{f:NOTE.G5,d:0.3},5:{f:NOTE.A5,d:0.6},7:{f:NOTE.E5,d:0.3},9:{f:NOTE.C5,d:0.45},
+    12:{f:NOTE.A4,d:0.4},15:{f:NOTE.C5,d:0.45},17:{f:NOTE.D5,d:0.4},19:{f:NOTE.G5,d:0.4},22:{f:NOTE.D5,d:0.4},
+    25:{f:NOTE.E5,d:0.45},28:{f:NOTE.C5,d:0.4},30:{f:NOTE.A4,d:0.6}}
+};
+const stepSeconds=()=>(60/Audio.bpm)/2;
+function playTone(freq,when,dur,type,vol,dest){
+  if(!Audio.ctx)return;
+  const osc=Audio.ctx.createOscillator(),g=Audio.ctx.createGain();
+  osc.type=type||'sine';osc.frequency.value=freq;
+  g.gain.setValueAtTime(0.0001,when);g.gain.linearRampToValueAtTime(vol,when+0.008);
+  g.gain.setValueAtTime(vol,when+dur-0.08);g.gain.exponentialRampToValueAtTime(0.0001,when+dur);
+  osc.connect(g);g.connect(dest);osc.start(when);osc.stop(when+dur+0.05);
+}
+function scheduleStep(step,when){
+  const sps=stepSeconds();
+  if(MUSIC.bass[step])playTone(MUSIC.bass[step],when,0.55,'triangle',0.22,Audio.music);
+  if(MUSIC.pad[step])MUSIC.pad[step].forEach(f=>playTone(f,when,2.1,'sine',0.055,Audio.music));
+  if(MUSIC.melody[step]){const m=MUSIC.melody[step],d=m.d*sps;
+    playTone(m.f,when,d,'sine',0.15,Audio.music);}
+}
+function musicTick(){
+  if(!Audio.playing||!Audio.ctx)return;
+  const horizon=Audio.ctx.currentTime+0.16;
+  while(Audio.nextTime<horizon){scheduleStep(Audio.step,Audio.nextTime);Audio.nextTime+=stepSeconds();Audio.step=(Audio.step+1)%Audio.STEPS;}
+}
+function startMusic(){if(!Audio.ctx||Audio.playing)return;Audio.playing=true;Audio.step=0;
+  Audio.nextTime=Audio.ctx.currentTime+0.1;if(!Audio.timer)Audio.timer=setInterval(musicTick,25);updateAudioButtons();}
+function stopMusic(){Audio.playing=false;updateAudioButtons();}
+function sfxTone(freq,dur,type,vol){
+  if(!Audio.ready||!Audio.sfxOn)return;
+  playTone(freq,Audio.ctx.currentTime,dur,type||'sine',vol||0.05,Audio.sfx);
+}
+const snd={
+  click:()=>sfxTone(660,0.06,'sine',0.035),
+  faturar:()=>{sfxTone(784,0.08);setTimeout(()=>sfxTone(1046,0.12),70)},
+  cash:()=>{sfxTone(880,0.1,'sine',0.06);setTimeout(()=>sfxTone(1318,0.15,'sine',0.055),70);setTimeout(()=>sfxTone(1760,0.18,'sine',0.04),160)},
+  error:()=>{sfxTone(160,0.16,'square',0.055);setTimeout(()=>sfxTone(120,0.16,'square',0.055),80)},
+  ding:()=>{sfxTone(1046,0.1,'sine',0.05);setTimeout(()=>sfxTone(1318,0.14,'sine',0.04),80)},
+  bell:()=>{sfxTone(1318,0.15,'sine',0.05);setTimeout(()=>sfxTone(1046,0.2,'sine',0.045),140)},
+  level:()=>{[523.25,659.25,783.99,1046.5].forEach((f,i)=>setTimeout(()=>sfxTone(f,0.18,'triangle',0.07),i*90))},
+  broke:()=>{sfxTone(120,0.25,'sawtooth',0.07);setTimeout(()=>sfxTone(90,0.3,'sawtooth',0.06),140)},
+  whoosh:()=>{if(!Audio.ready)return;const t=Audio.ctx.currentTime;
+    const o=Audio.ctx.createOscillator(),g=Audio.ctx.createGain();
+    o.type='triangle';o.frequency.setValueAtTime(380,t);o.frequency.exponentialRampToValueAtTime(140,t+0.42);
+    g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.08,t+0.05);g.gain.exponentialRampToValueAtTime(0.0001,t+0.5);
+    o.connect(g);g.connect(Audio.sfx);o.start(t);o.stop(t+0.55)},
+  achievement:()=>{[784,1046.5,1318.5,1567.98].forEach((f,i)=>setTimeout(()=>sfxTone(f,0.22,'sine',0.055),i*110))},
+  month:()=>{sfxTone(1568,0.08,'square',0.05);setTimeout(()=>sfxTone(1046,0.15,'sine',0.06),60);
+    setTimeout(()=>sfxTone(1318,0.25,'sine',0.055),180);setTimeout(()=>sfxTone(1568,0.35,'sine',0.045),320)},
+  hammer:()=>{sfxTone(220,0.06,'square',0.06);setTimeout(()=>sfxTone(180,0.08,'square',0.05),80)},
+  alarm:()=>{sfxTone(880,0.12,'square',0.05);setTimeout(()=>sfxTone(660,0.12,'square',0.05),130);setTimeout(()=>sfxTone(880,0.12,'square',0.05),260)},
+  bank:()=>{[523,659,784].forEach((f,i)=>setTimeout(()=>sfxTone(f,0.15,'sine',0.06),i*100))}
+};
+function updateAudioButtons(){
+  const m=document.getElementById('btn-music'),s=document.getElementById('btn-sfx');
+  if(m){m.textContent=Audio.musicOn?'🎵':'🔕';m.classList.toggle('playing',Audio.musicOn&&Audio.playing);}
+  if(s){s.textContent=Audio.sfxOn?'🔊':'🔇';s.classList.toggle('playing',Audio.sfxOn);}
+}
+
+/* ============================================================
+   HELPERS & PRODUÇÃO
+   ============================================================ */
+const precoAco=()=>4.30*(1-0.08*S.up.aco)*S.acoMult;
+const tempoTroca=()=>0.45*Math.pow(0.55,S.up.troca);
+const custoBobina=b=>Math.round(b.kg*precoAco());
+const machineBrand=l=>MACHINE_BRANDS[l.brand||0];
+const truckBrand=c=>TRUCK_BRANDS[c.brand||0];
+const salariesMes=()=>S.employees.reduce((a,e)=>a+e.salario,0);
+
+function capArmazem(){
+  let base=5000;
+  for(const k of S.galpoes){const g=GALPOES.find(x=>x.key===k);if(g)base+=g.cap;}
+  return base;
+}
+function espacoUsado(){
+  let t=0;
+  for(const k in S.estoqueMateriais){if(S.estoqueMateriais[k]>0)t+=S.estoqueMateriais[k]*MATERIAIS[k].peso;}
+  return t;
+}
+function espacoLivre(){return capArmazem()-espacoUsado();}
+
+function novaBobina(kgMin=7000,kgMax=8000){const kg=rint(kgMin,kgMax);return{id:novoId(),kg,cap:kg};}
+function criarCaminhao(i,brand=0){
+  const b=TRUCK_BRANDS[brand];
+  return{id:novoId(),nome:'Caminhão '+i,brand,cap:b.cap,status:'parado',carga:null,prog:0,dur:0,destino:'',motorista:null};
+}
+function criarLinha(n,brand=0){
+  return{id:novoId(),nome:'Linha '+n,brand,pedidoId:null,produtoAtual:'telha_trap',
+    metrosFeitos:0,coil:null,trocando:0,desgaste:0,quebrada:false,conserto:0,operador:null,
+    isStockProd:false, stockTarget:0, stockProgress:0};
+}
+function nivelInfo(){
+  const marcos=[0,150000,400000,900000,1800000,3200000];
+  let n=1;for(let i=1;i<marcos.length;i++)if(S.faturamento>=marcos[i])n=i+1;
+  const prox=marcos[n]||null,base=marcos[n-1];
+  return{n,prox,base,pct:prox?clamp((S.faturamento-base)/(prox-base),0,1):1};
+}
+function totais(){
+  const a={receita:0,custoAco:0,manutencoes:0,multas:0,investimento:0,salarios:0,juros:0,custoMateriais:0};
+  S.historico.forEach(h=>{for(const k in a)a[k]+=h[k]||0;});
+  for(const k in a)a[k]+=S.fin[k]||0;
+  return a;
+}
+
+function coilSVG(pct=1){
+  const scale=0.5+0.5*pct;
+  return `<svg viewBox="0 0 66 66" style="transform:scale(${scale.toFixed(2)})">
+    <defs><radialGradient id="mt" cx="40%" cy="35%"><stop offset="0%" stop-color="#e0e8f5"/><stop offset="60%" stop-color="#a0afc8"/><stop offset="100%" stop-color="#4a5878"/></radialGradient>
+    <radialGradient id="hole" cx="50%" cy="50%"><stop offset="60%" stop-color="#0b1322"/><stop offset="100%" stop-color="#1a2740"/></radialGradient></defs>
+    <ellipse cx="33" cy="62" rx="26" ry="3" fill="#000" opacity="0.35"/>
+    <circle cx="33" cy="33" r="30" fill="url(#mt)" stroke="#2a3450" stroke-width="1.5"/>
+    <circle cx="33" cy="33" r="26" fill="none" stroke="#3a4868" stroke-width="0.6" opacity="0.7"/>
+    <circle cx="33" cy="33" r="22" fill="none" stroke="#3a4868" stroke-width="0.6" opacity="0.7"/>
+    <circle cx="33" cy="33" r="18" fill="none" stroke="#3a4868" stroke-width="0.6" opacity="0.7"/>
+    <circle cx="33" cy="33" r="14" fill="none" stroke="#3a4868" stroke-width="0.6" opacity="0.7"/>
+    <circle cx="33" cy="33" r="10" fill="url(#hole)" stroke="#0a0f1a" stroke-width="1"/>
+    <circle cx="20" cy="20" r="3" fill="#fff" opacity="0.25"/>
+  </svg>`;
+}
+function truckSVG(brand){
+  const c=TRUCK_BRANDS[brand]||TRUCK_BRANDS[0];
+  const len=48+brand*3;
+  const wheels=`<circle cx="14" cy="24" r="4" fill="#1a1f2e" stroke="#333" stroke-width="1"/><circle cx="14" cy="24" r="1.8" fill="#555"/><circle cx="${len-12}" cy="24" r="4" fill="#1a1f2e" stroke="#333" stroke-width="1"/><circle cx="${len-12}" cy="24" r="1.8" fill="#555"/>`;
+  return `<svg viewBox="0 0 ${len+4} 30" class="truckSVG">
+    <ellipse cx="${len/2+2}" cy="28" rx="${len/2}" ry="1.5" fill="#000" opacity="0.4"/>
+    <rect x="2" y="10" width="${len-4}" height="12" rx="2" fill="${c.cor2}" stroke="#222" stroke-width="0.8"/>
+    <rect x="2" y="12" width="${len-4}" height="1" fill="#fff" opacity="0.15"/>
+    <rect x="${len-14}" y="8" width="14" height="14" rx="2" fill="${c.cor}" stroke="#222" stroke-width="0.8"/>
+    <rect x="${len-12}" y="10" width="9" height="6" fill="#7cb8e0" opacity="0.75" rx="1"/>
+    <circle cx="${len-3}" cy="19" r="1" fill="#ff5" opacity="0.9"/>${wheels}</svg>`;
+}
+
+function cashPopup(value){
+  const el=document.getElementById('st-caixa');if(!el)return;
+  const rect=el.getBoundingClientRect();
+  const p=document.createElement('div');p.className='cash-popup '+(value>=0?'positive':'negative');
+  p.textContent=(value>=0?'+':'−')+fmtMoney(Math.abs(value));
+  p.style.left=(rect.left+rect.width/2)+'px';p.style.top=(rect.top+rect.height/2)+'px';p.style.transform='translate(-50%,0)';
+  document.body.appendChild(p);setTimeout(()=>p.remove(),1700);
+  const stat=document.getElementById('stat-caixa');
+  if(stat){stat.classList.remove('flash');void stat.offsetWidth;stat.classList.add('flash');}
+}
+function confetti(n=70){
+  const cores=['#f5a524','#2fd39b','#3f8cff','#ff6a3d','#ffca63','#7ef7c8'];
+  for(let i=0;i<n;i++){const c=document.createElement('div');c.className='confetti';
+    c.style.left=Math.random()*100+'vw';c.style.background=pick(cores);
+    c.style.setProperty('--cx',(Math.random()*240-120)+'px');
+    c.style.animationDelay=(Math.random()*0.4)+'s';c.style.animationDuration=(1.4+Math.random()*1.2)+'s';
+    document.body.appendChild(c);setTimeout(()=>c.remove(),3200);}
+}
+function log(msg,cls){
+  const box=document.getElementById('log');if(!box)return;
+  const el=document.createElement('div');el.className='p'+(cls?' '+cls:'');
+  const hora=document.createElement('span');hora.className='t';
+  hora.textContent='D'+(Math.floor(S.t/24)+1)+' '+fmtHora(S.t);
+  el.appendChild(hora);el.appendChild(document.createTextNode(msg));
+  box.appendChild(el);while(box.children.length>45)box.removeChild(box.firstChild);
+  box.scrollTop=box.scrollHeight;
+}
+function toast(msg,cls){
+  const box=document.getElementById('toasts');if(!box)return;
+  const el=document.createElement('div');el.className='toast'+(cls?' '+cls:'');
+  el.textContent=msg;box.appendChild(el);
+  setTimeout(()=>{el.style.transition='all .3s';el.style.opacity='0';el.style.transform='translateX(24px)';
+    setTimeout(()=>el.remove(),320);},3200);
+}
+
+/* ============================================================
+   MATERIAIS
+   ============================================================ */
+function comprarMaterial(key,qty){
+  const mat=MATERIAIS[key];if(!mat)return;
+  qty=Math.floor(qty);
+  if(qty<1){toast('Quantidade inválida.','bad');snd.error();return;}
+  const pesoTotal=qty*mat.peso;
+  const livre=espacoLivre();
+  if(pesoTotal>livre){toast('Armazém cheio! Livre: '+fmtNum(livre)+' un.','bad');snd.error();return;}
+  const custo=mat.preco*qty;
+  if(S.caixa<custo){toast('Faltam '+fmtMoney(custo-S.caixa),'bad');snd.error();return;}
+  S.caixa-=custo;S.fin.custoMateriais+=custo;
+  S.estoqueMateriais[key]=(S.estoqueMateriais[key]||0)+qty;
+  S.stats.materiaisComprados+=qty;
+  cashPopup(-custo);snd.cash();
+  log('Comprou '+fmtNum(qty)+'x '+mat.nome+' · '+fmtMoney(custo),'money');
+  toast(fmtNum(qty)+'x '+mat.nome+' comprado','good');
+  renderMateriais();renderMateriaisPanel();renderTopo();
+}
+function comprarGalpao(key){
+  const g=GALPOES.find(x=>x.key===key);if(!g)return;
+  const owned=S.galpoes.filter(k=>k===key).length;
+  if(owned>=g.max){toast('Máximo deste galpão.','bad');snd.error();return;}
+  const custo=Math.round(g.custo*Math.pow(1.4,owned));
+  if(S.caixa<custo){toast('Faltam '+fmtMoney(custo-S.caixa),'bad');snd.error();return;}
+  S.caixa-=custo;S.fin.investimento+=custo;S.galpoes.push(key);
+  cashPopup(-custo);snd.hammer();
+  log('Comprou '+g.nome+' (+'+fmtNum(g.cap)+' un)','money');
+  toast(g.nome+' comprado!','good');
+  renderMateriais();renderTopo();
+}
+function selecionarMaterialUI(){
+  const sel=document.getElementById('mat-sel');if(!sel)return;
+  const key=sel.value;const mat=MATERIAIS[key];
+  const estoque=S.estoqueMateriais[key]||0;
+  const detalhe=document.getElementById('mat-detalhe');
+  if(detalhe){
+    detalhe.innerHTML='<div class="nome">'+mat.icon+' '+mat.nome+'</div>'
+      +'<div class="l1"><span>Preço unit.</span><b>'+fmtMoney(mat.preco)+'</b></div>'
+      +'<div class="l1"><span>Peso no armazém</span><b>'+mat.peso+' un/item</b></div>'
+      +'<div class="l1"><span>Estoque atual</span><b>'+fmtNum(estoque)+'</b></div>';
+  }
+  atualizarMatTotalUI();
+}
+function atualizarMatTotalUI(){
+  const sel=document.getElementById('mat-sel'),inp=document.getElementById('mat-qty-inp'),tot=document.getElementById('mat-total');
+  if(!sel||!inp||!tot)return;
+  const mat=MATERIAIS[sel.value],qty=Number(inp.value)||0;
+  tot.innerHTML='Total: <b>'+fmtMoney(mat.preco*qty)+'</b> · peso '+fmtNum(qty*mat.peso)+' un';
+}
+function matQtyAdd(v){
+  const inp=document.getElementById('mat-qty-inp');if(!inp)return;
+  if(v<0){inp.value=100;}
+  else{inp.value=Math.max(1,(Number(inp.value)||0)+v);}
+  atualizarMatTotalUI();
+}
+
+/* ============================================================
+   CLIENTES
+   ============================================================ */
+function fielDe(nome){
+  const f=S.fieis[nome];if(!f)return null;
+  if(f.metros>=1500)return 'ouro';
+  if(f.metros>=600)return 'prata';
+  return 'bronze';
+}
+function novoTamanhoTelha(){const n=nivelInfo().n;return Math.round(rnd(120,320)*(1+0.15*(n-1))/10)*10;}
+function chegaCliente(){
+  const nv=nivelInfo();
+  const podeMaterial=nv.n>=2||S.stats.materiaisComprados>0;
+  const isMaterial=podeMaterial&&Math.random()<0.35;
+  if(isMaterial){chegaClienteMaterial(nv);return;}
+  chegaClienteTelha(nv);
+}
+function chegaClienteTelha(nv){
+  const conhecidos=Object.keys(S.fieis);
+  let nome=pick(NOMES);if(conhecidos.length&&Math.random()<0.45)nome=pick(conhecidos);
+  let pool;
+  if(nv.n===1)pool=['telha_trap','telha_trap','telha_trap','telha_onda','barra_chata'];
+  else if(nv.n===2)pool=['telha_trap','telha_trap','telha_onda','cumeeira','cantoneira','barra_chata'];
+  else if(nv.n===3)pool=['telha_trap','telha_onda','cumeeira','cantoneira','trelica','barra_chata'];
+  else pool=ORDEM_PRODUTOS;
+  const produto=pick(pool);
+  const metros=novoTamanhoTelha();
+  const premium=Math.random()<0.08&&nv.n>=2;
+  const urgente=premium||(Math.random()<0.22&&nv.n>=2);
+  let precoUnit=PRODUCTS[produto].preco*(0.70+S.rep/100*0.30)*(1+(nv.n-1)*0.05);
+  if(urgente)precoUnit*=1.15;
+  if(premium)precoUnit*=1.25;
+  const nivel=fielDe(nome);
+  if(nivel==='ouro')precoUnit*=1.05;
+  if(nivel==='prata')precoUnit*=1.03;
+  precoUnit=Math.round(precoUnit);
+  const c={id:novoId(),tipo:'telha',nome,produto,metros,precoUnit,valor:precoUnit*metros,
+    urgente,premium,negociado:false,desconto:0,sinal:false,
+    paciencia:rnd(1.8,3.0),pacienciaMax:0,
+    prazo:S.t+(premium?8:urgente?10:22)};
+  c.pacienciaMax=c.paciencia;S.clientes.push(c);snd.bell();
+  if(premium)toast('⭐ VIP: '+nome,'good');
+  else toast(nivel?'Cliente fiel: '+nome:'Cliente no balcão: '+nome);
+}
+function chegaClienteMaterial(nv){
+  const key=pick(ORDEM_MATERIAIS);const mat=MATERIAIS[key];
+  let qty;
+  if(mat.peso===1)qty=rint(100,500)*Math.max(1,nv.n);
+  else if(mat.peso<=3)qty=rint(20,100)*Math.max(1,nv.n);
+  else qty=rint(10,50)*Math.max(1,nv.n);
+  const markup=1.55+S.rep/100*0.5+(nv.n-1)*0.08;
+  const precoUnit=Math.round(mat.preco*markup*100)/100;
+  const nome=pick(NOMES);
+  const c={id:novoId(),tipo:'material',nome,materialKey:key,qty,precoUnit,
+    valor:precoUnit*qty,urgente:false,premium:false,negociado:false,desconto:0,sinal:false,
+    paciencia:rnd(2,3.5),pacienciaMax:0,prazo:S.t+18};
+  c.pacienciaMax=c.paciencia;S.clientes.push(c);snd.bell();
+  toast('🧱 Cliente quer '+fmtNum(qty)+'x '+mat.nome,'good');
+}
+function negociar(id){
+  const c=S.clientes.find(x=>x.id===id);if(!c||c.negociado)return;
+  const desc=0.05+Math.random()*0.045;
+  c.negociado=true;c.desconto=desc;c.sinal=c.tipo!=='material';
+  c.precoUnit=Math.round(c.precoUnit*(1-desc)*100)/100;
+  c.valor=c.precoUnit*(c.tipo==='material'?c.qty:c.metros);
+  c.paciencia=Math.min(c.pacienciaMax,c.paciencia+c.pacienciaMax*0.45);
+  S.stats.negociacoes++;snd.click();
+  log('Negociação com '+c.nome+': −'+Math.round(desc*100)+'%','money');
+  toast('Negociado: −'+Math.round(desc*100)+'%','good');
+}
+function faturar(id){
+  const i=S.clientes.findIndex(c=>c.id===id);if(i<0)return;
+  const c=S.clientes[i];
+  if(c.tipo==='material'){faturarMaterial(c,i);return;}
+  faturarTelha(c,i);
+}
+function faturarTelha(c,i){
+  S.clientes.splice(i,1);
+  let sinalPago=0;
+  if(c.sinal){sinalPago=Math.round(c.valor*0.30);S.caixa+=sinalPago;S.fin.receita+=sinalPago;cashPopup(sinalPago);}
+  if(c.premium)S.stats.premium++;
+  const p={id:novoId(),cliente:c.nome,produto:c.produto,metros:c.metros,precoUnit:c.precoUnit,
+    valor:c.valor,sinalPago,urgente:c.urgente,premium:c.premium,prazo:c.prazo,criado:S.t,
+    status:'fila',linhaId:null,metrosFeitos:0};
+  S.pedidos.push(p);S.faturamento+=c.valor;snd.faturar();
+  log('Nota: '+c.nome+' · '+fmtMoney(c.valor),'money');
+  toast('Pedido faturado: '+fmtMoney(c.valor),'good');
+  checarConquistas();
+}
+function faturarMaterial(c,i){
+  const mat=MATERIAIS[c.materialKey];
+  const estoque=S.estoqueMateriais[c.materialKey]||0;
+  if(estoque<c.qty){toast('Estoque insuficiente: '+fmtNum(estoque)+'/'+fmtNum(c.qty),'bad');snd.error();return;}
+  S.clientes.splice(i,1);
+  S.estoqueMateriais[c.materialKey]-=c.qty;
+  if(S.estoqueMateriais[c.materialKey]<=0)delete S.estoqueMateriais[c.materialKey];
+  S.entregasPendentes.push({id:novoId(),cliente:c.nome,materialKey:c.materialKey,
+    qty:c.qty,valor:c.valor,prazo:c.prazo});
+  S.faturamento+=c.valor;snd.faturar();
+  log('Reservado: '+fmtNum(c.qty)+'x '+mat.nome,'money');
+  toast('Reservado: '+fmtNum(c.qty)+'x '+mat.nome,'good');
+}
+function recusar(id){
+  const i=S.clientes.findIndex(c=>c.id===id);if(i<0)return;
+  const c=S.clientes.splice(i,1)[0];
+  S.stats.recusas++;S.rep=clamp(S.rep-1.5,25,100);
+  snd.error();log('Pedido recusado: '+c.nome,'bad');
+}
+
+/* ============================================================
+   PRODUÇÃO (para cliente e para estoque)
+   ============================================================ */
+function linhaLivreComAco(){
+  return S.linhas.find(l=>!l.pedidoId&&!l.isStockProd&&l.trocando<=0&&!l.quebrada&&l.conserto<=0&&l.coil&&l.coil.kg>1);
+}
+function mandarProduzir(pid){
+  const p=S.pedidos.find(x=>x.id===pid);if(!p||p.status!=='fila')return;
+  const livre=linhaLivreComAco();
+  if(!livre){toast('Nenhuma perfiladeira com bobina.','bad');snd.error();return;}
+  livre.pedidoId=p.id;livre.metrosFeitos=0;livre.produtoAtual=p.produto;
+  p.status='producao';p.linhaId=livre.id;p.linha=livre.nome;
+  snd.click();log('Produção: '+p.cliente+' → '+livre.nome+'.');
+}
+function produzirEstoque(lineId){
+  const l=S.linhas.find(x=>x.id===lineId);if(!l)return;
+  if(!l.coil||l.coil.kg<=1){toast('Sem bobina na linha.','bad');snd.error();return;}
+  if(l.quebrada||l.conserto>0||l.pedidoId||l.isStockProd)return;
+  const prod=PRODUCTS[l.produtoAtual];
+  
+  // Pega a quantidade do input (1 a 5000)
+  const inputEl = document.getElementById('stock-qty-'+lineId);
+  let target = 200;
+  if(inputEl) {
+    target = parseInt(inputEl.value) || 1;
+    target = Math.max(1, Math.min(5000, target));
+  }
+  
+  l.isStockProd=true;
+  l.stockTarget=target;
+  l.stockProgress=0;
+  snd.click();
+  log('Produção p/ Estoque iniciada: '+target+'x '+prod.nome,'money');
+  toast('Fabricando p/ Estoque: '+target+'x '+prod.nome,'good');
+}
+function pararProducaoEstoque(lineId){
+  const l=S.linhas.find(x=>x.id===lineId);if(!l||!l.isStockProd)return;
+  l.isStockProd=false;
+  
+  // Salva o que já produziu
+  const prod=PRODUCTS[l.produtoAtual];
+  const qtd = Math.round(l.stockProgress);
+  if (qtd > 0) {
+    if(prod.cat==='mat'){
+      S.estoqueMateriais[l.produtoAtual]=(S.estoqueMateriais[l.produtoAtual]||0)+qtd;
+    } else {
+      S.estoque[l.produtoAtual]=(S.estoque[l.produtoAtual]||0)+qtd;
+      const custoReal = qtd * prod.kgm * precoAco();
+      S.estoqueValores[l.produtoAtual]=(S.estoqueValores[l.produtoAtual]||0)+custoReal;
+    }
+    log('Estoque: +'+qtd+'x '+prod.nome+' (parado)','good');
+  }
+  
+  toast('Produção p/ estoque cancelada.','bad');
+}
+function carregarBobina(lineId){
+  const l=S.linhas.find(x=>x.id===lineId);if(!l)return;
+  if(l.quebrada||l.conserto>0){toast(l.nome+' está parada.','bad');snd.error();return;}
+  if(l.coil&&l.coil.kg>1){toast('A linha já tem bobina.','bad');snd.error();return;}
+  if(!S.bobinas.length){toast('Rack vazio.','bad');snd.error();return;}
+  const b=S.bobinas.slice().sort((x,y)=>y.kg-x.kg)[0];
+  S.bobinas=S.bobinas.filter(x=>x.id!==b.id);
+  l.coil=b;l.trocando=tempoTroca();
+  snd.ding();log(l.nome+' recebendo bobina de '+fmtT(b.kg)+'.','good');
+}
+function comprarBobina(){
+  const b=novaBobina();const custo=custoBobina(b);
+  if(S.caixa<custo){toast('Caixa insuficiente: '+fmtMoney(custo),'bad');snd.error();return;}
+  S.caixa-=custo;S.fin.custoAco+=custo;S.bobinas.push(b);
+  cashPopup(-custo);snd.cash();
+  log('Bobina '+fmtT(b.kg)+' por '+fmtMoney(custo),'money');
+}
+function custoManutencao(l){
+  const b=machineBrand(l);
+  if(l.quebrada)return Math.round(b.manut*4+l.desgaste*b.manut/10);
+  return Math.round(b.manut*0.4+l.desgaste*b.manut*0.06);
+}
+function manutencao(lineId){
+  const l=S.linhas.find(x=>x.id===lineId);if(!l)return;
+  if(!l.quebrada&&l.desgaste<4){toast(l.nome+' em ordem.','bad');snd.error();return;}
+  const custo=custoManutencao(l);
+  if(S.caixa<custo){toast('Faltam '+fmtMoney(custo-S.caixa),'bad');snd.error();return;}
+  S.caixa-=custo;S.fin.manutencoes+=custo;S.stats.manutencoes++;
+  cashPopup(-custo);
+  if(l.quebrada){l.quebrada=false;l.conserto=2.0;l.desgaste=0;snd.hammer();
+    log(l.nome+': conserto '+fmtMoney(custo),'bad');}
+  else{l.desgaste=0;snd.ding();log(l.nome+': manutenção '+fmtMoney(custo),'good');}
+}
+
+function producao(dtH){
+  const wSpeed=WEATHERS[S.weather].speed;
+  S.linhas.forEach(l=>{
+    if(l.conserto>0){l.conserto=Math.max(0,l.conserto-dtH);
+      if(l.conserto===0){log(l.nome+': conserto ok.','good');snd.ding();}return;}
+    if(l.quebrada)return;
+    if(l.trocando>0){l.trocando=Math.max(0,l.trocando-dtH);
+      if(l.trocando===0)log(l.nome+': bobina engatada.');return;}
+    
+    // ==== PRODUÇÃO PARA CLIENTE ====
+    if(l.pedidoId){
+      const p=S.pedidos.find(x=>x.id===l.pedidoId);
+      if(!p){l.pedidoId=null;return;}
+      const prod=PRODUCTS[p.produto];
+      const brand=machineBrand(l);
+      const restante=p.metros-p.metrosFeitos;
+      let metros=Math.min(restante,brand.vel*prod.vel*dtH*wSpeed);
+      const kgNec=metros*prod.kgm*1.03;
+      if(kgNec>l.coil.kg){metros=l.coil.kg/(prod.kgm*1.03);
+        if(metros<=0.01){l.pedidoId=null;l.coil.kg=0;p.status='fila';p.linhaId=null;
+          log(l.nome+': ACABOU O AÇO.','bad');snd.alarm();return;}}
+      const consumo=metros*prod.kgm*1.03;
+      l.coil.kg=Math.max(0,l.coil.kg-consumo);
+      S.stats.refugo+=consumo*0.03;S.stats.metros+=metros;p.metrosFeitos+=metros;
+      l.desgaste=Math.min(100,l.desgaste+metros*brand.desg);
+      if(l.desgaste>=100){l.quebrada=true;l.pedidoId=null;p.status='fila';p.linhaId=null;
+        S.rep=clamp(S.rep-2,25,100);log(l.nome+': QUEBROU!','bad');snd.alarm();return;}
+      if(l.coil.kg<=0.5&&p.metrosFeitos<p.metros){l.pedidoId=null;p.status='fila';p.linhaId=null;
+        log(l.nome+': bobina esgotada.','bad');snd.error();return;}
+      if(p.metrosFeitos>=p.metros-0.01){
+        p.metrosFeitos=p.metros;p.status='pronto';l.pedidoId=null;
+        const valorRestante=Math.max(0,p.valor-(p.sinalPago||0));
+        if(prod.cat==='mat'){
+          S.estoqueMateriais[p.produto]=(S.estoqueMateriais[p.produto]||0)+Math.round(p.metros);
+        }else{
+          S.estoque[p.produto]=(S.estoque[p.produto]||0)+p.metros;
+          S.estoqueValores[p.produto]=(S.estoqueValores[p.produto]||0)+valorRestante;
+        }
+        S.pedidos=S.pedidos.filter(x=>x.id!==p.id);
+        snd.ding();log('Produção: '+Math.round(p.metros)+'x '+prod.nome+' → Estoque','good');
+        toast('Pronto: '+prod.nome,'good');
+      }
+      return;
+    }
+    
+    // ==== PRODUÇÃO PARA ESTOQUE ====
+    if(l.isStockProd){
+      const prod=PRODUCTS[l.produtoAtual];
+      const brand=machineBrand(l);
+      const restante=l.stockTarget-l.stockProgress;
+      
+      // Se já atingiu ou passou (por segurança), finaliza
+      if(restante<=0){
+        l.isStockProd=false;
+        return;
+      }
+      
+      let metros=Math.min(restante,brand.vel*prod.vel*dtH*wSpeed);
+      const kgNec=metros*prod.kgm*1.03;
+      
+      // Se a bobina acabar no meio do processo
+      if(kgNec>l.coil.kg){
+        metros=l.coil.kg/(prod.kgm*1.03);
+        if(metros<=0.01){
+          l.isStockProd=false;l.coil.kg=0;
+          const qtd = Math.round(l.stockProgress);
+          if (qtd > 0) {
+            if(prod.cat==='mat'){
+              S.estoqueMateriais[l.produtoAtual]=(S.estoqueMateriais[l.produtoAtual]||0)+qtd;
+            } else {
+              S.estoque[l.produtoAtual]=(S.estoque[l.produtoAtual]||0)+qtd;
+              const custoReal = qtd * prod.kgm * precoAco();
+              S.estoqueValores[l.produtoAtual]=(S.estoqueValores[l.produtoAtual]||0)+custoReal;
+            }
+            log('Estoque: +'+qtd+'x '+prod.nome+' (fim do aço)','bad');
+          }
+          log(l.nome+': ACABOU O AÇO.','bad');snd.alarm();return;
+        }
+      }
+      
+      const consumo=metros*prod.kgm*1.03;
+      l.coil.kg=Math.max(0,l.coil.kg-consumo);
+      S.stats.refugo+=consumo*0.03;
+      l.stockProgress+=metros;
+      l.desgaste=Math.min(100,l.desgaste+metros*brand.desg);
+      
+      // Se a máquina quebrar
+      if(l.desgaste>=100){
+        l.quebrada=true;l.isStockProd=false;
+        const qtd = Math.round(l.stockProgress);
+        if (qtd > 0) {
+          if(prod.cat==='mat'){
+            S.estoqueMateriais[l.produtoAtual]=(S.estoqueMateriais[l.produtoAtual]||0)+qtd;
+          } else {
+            S.estoque[l.produtoAtual]=(S.estoque[l.produtoAtual]||0)+qtd;
+            const custoReal = qtd * prod.kgm * precoAco();
+            S.estoqueValores[l.produtoAtual]=(S.estoqueValores[l.produtoAtual]||0)+custoReal;
+          }
+          log('Estoque: +'+qtd+'x '+prod.nome+' (quebrou)','bad');
+        }
+        S.rep=clamp(S.rep-2,25,100);log(l.nome+': QUEBROU!','bad');snd.alarm();return;
+      }
+      
+      // Conclusão com sucesso
+      if(l.stockProgress>=l.stockTarget-0.01){
+        l.isStockProd=false;
+        const qtd = Math.round(l.stockTarget);
+        if(prod.cat==='mat'){
+          S.estoqueMateriais[l.produtoAtual]=(S.estoqueMateriais[l.produtoAtual]||0)+qtd;
+        }else{
+          S.estoque[l.produtoAtual]=(S.estoque[l.produtoAtual]||0)+qtd;
+          const custoReal = l.stockTarget * prod.kgm * precoAco();
+          S.estoqueValores[l.produtoAtual]=(S.estoqueValores[l.produtoAtual]||0)+custoReal;
+        }
+        snd.ding();
+        log('Estoque: +'+qtd+'x '+prod.nome,'good');
+        toast('Estoque: +'+qtd+'x '+prod.nome,'good');
+      }
+    }
+  });
+}
+
+/* ============================================================
+   EXPEDIÇÃO
+   ============================================================ */
+function despachar(produtoKey){
+  const stock=S.estoque[produtoKey]||0;if(stock<=0)return;
+  const livre=S.caminhoes.find(c=>c.status==='parado');
+  if(!livre){toast('Nenhum caminhão livre.','bad');snd.error();return;}
+  const brand=truckBrand(livre);
+  const carga=Math.min(stock,livre.cap);
+  const valorTotal=S.estoqueValores[produtoKey]||0;
+  const valorCarga=valorTotal*(carga/stock);
+  S.estoque[produtoKey]-=carga;S.estoqueValores[produtoKey]-=valorCarga;
+  if(S.estoque[produtoKey]<=0.01){delete S.estoque[produtoKey];delete S.estoqueValores[produtoKey];}
+  livre.status='viagem';livre.prog=0;livre.dur=rnd(brand.durMin,brand.durMax);
+  livre.carga={tipo:'telha',produto:produtoKey,qty:carga,valor:valorCarga};
+  livre.destino=PRODUCTS[produtoKey].nome;
+  snd.whoosh();log(livre.nome+' com '+Math.round(carga)+'m → '+PRODUCTS[produtoKey].nome);
+}
+function despacharMaterial(id){
+  const e=S.entregasPendentes.find(x=>x.id===id);if(!e)return;
+  const livre=S.caminhoes.find(c=>c.status==='parado');
+  if(!livre){toast('Sem caminhão livre.','bad');snd.error();return;}
+  const brand=truckBrand(livre);const mat=MATERIAIS[e.materialKey];
+  const maxQty=Math.max(1,Math.floor(livre.cap*10/mat.peso));
+  const qtyCarga=Math.min(e.qty,maxQty);
+  const valorCarga=e.valor*(qtyCarga/e.qty);
+  e.qty-=qtyCarga;e.valor-=valorCarga;
+  livre.status='viagem';livre.prog=0;livre.dur=rnd(brand.durMin,brand.durMax);
+  livre.carga={tipo:'material',materialKey:e.materialKey,qty:qtyCarga,valor:valorCarga,cliente:e.cliente,prazo:e.prazo};
+  livre.destino=mat.nome;
+  if(e.qty<=0)S.entregasPendentes=S.entregasPendentes.filter(x=>x.id!==e.id);
+  snd.whoosh();log(livre.nome+' com '+fmtNum(qtyCarga)+'x '+mat.nome+' → '+e.cliente);
+}
+function expedicao(dtH){
+  S.caminhoes.forEach(c=>{
+    if(c.status!=='viagem')return;
+    c.prog+=dtH/c.dur;if(c.prog<1)return;
+    const k=c.carga;
+    S.caixa+=k.valor;S.fin.receita+=k.valor;S.stats.viagens++;
+    const cliente=k.cliente||'Cliente';
+    const f=S.fieis[cliente]||(S.fieis[cliente]={metros:0,valor:0,entregas:0});
+    f.valor+=k.valor;f.entregas+=1;
+    const atraso=k.prazo&&S.t>k.prazo;
+    if(atraso){
+      const multa=k.valor*0.10;
+      S.caixa-=multa;S.fin.multas+=multa;S.rep=clamp(S.rep-6,25,100);S.stats.atrasos++;
+      cashPopup(-multa);snd.error();log('ATRASO — multa '+fmtMoney(multa),'bad');
+    }else{
+      S.rep=clamp(S.rep+1.5,25,100);cashPopup(k.valor);snd.cash();
+      log('Entrega: '+fmtMoney(k.valor),'money');toast('Entrega: '+fmtMoney(k.valor),'good');
+    }
+    c.status='parado';c.prog=0;c.carga=null;c.destino='';
+    checarConquistas();
+  });
+}
+
+/* ============================================================
+   OBRAS
+   ============================================================ */
+function chegaObra(){
+  const nv=nivelInfo();
+  let pool=['galpao_p','casa_p'];
+  if(nv.n>=3)pool.push('galpao_g');
+  if(nv.n>=4)pool.push('casa_luxo');
+  const key=pick(pool);const b=BUILDINGS[key];const cliente=pick(NOMES);
+  const o={id:novoId(),cliente,buildingKey:key,building:b,status:'aguardando',
+    progresso:0,horasRestantes:b.horas,
+    valorFinal:Math.round(b.valor*(0.9+S.rep/100*0.2)*(1+(nv.n-1)*0.08)),
+    prazo:S.t+72,aceita:false,velocidade:1};
+  S.obras.push(o);toast('🏗️ Projeto: '+b.nome+' — '+cliente,'good');snd.bell();
+  log('🏗️ Projeto: '+b.nome+' ('+fmtMoney(o.valorFinal)+')','money');
+}
+function aceitarObra(id){
+  const o=S.obras.find(x=>x.id===id);if(!o||o.aceita)return;
+  o.aceita=true;snd.click();toast('Projeto aceito.','good');log('Obra aceita: '+o.building.nome,'money');
+}
+function temTodosMateriais(o){
+  for(const prod in o.building.needs){
+    const n=o.building.needs[prod];
+    const isMat=MATERIAIS[prod] || PRODUCTS[prod]?.cat==='mat';
+    const have = isMat ? (S.estoqueMateriais[prod]||0) : (S.estoque[prod]||0);
+    if (have < n) return false;
+  }
+  return true;
+}
+function construirObra(id){
+  const o=S.obras.find(x=>x.id===id);if(!o)return;
+  if(!o.aceita){toast('Aceite o projeto.','bad');snd.error();return;}
+  if(o.status!=='aguardando')return;
+  if(!temTodosMateriais(o)){toast('Faltam materiais.','bad');snd.error();return;}
+  for(const prod in o.building.needs){
+    const n=o.building.needs[prod];
+    const isMat=MATERIAIS[prod] || PRODUCTS[prod]?.cat==='mat';
+    if(isMat){S.estoqueMateriais[prod]-=n;if(S.estoqueMateriais[prod]<=0)delete S.estoqueMateriais[prod];}
+    else{S.estoque[prod]-=n;if(S.estoque[prod]<=0)delete S.estoque[prod];}
+  }
+  o.status='construindo';o.progresso=0;
+  const temGerente=S.employees.some(e=>e.tipo==='gerente');
+  o.velocidade=temGerente?1.3:1.0;
+  snd.hammer();toast('Construção iniciada!','good');log('🏗️ Construindo: '+o.building.nome,'money');
+}
+function processarObras(dtH){
+  S.obras.forEach(o=>{
+    if(o.status==='construindo'){
+      o.progresso+=dtH/o.building.horas*o.velocidade*100;
+      if(o.progresso>=100){
+        o.status='pronto';const valor=o.valorFinal;
+        S.caixa+=valor;S.fin.receita+=valor;S.faturamento+=valor;S.stats.obrasConcluidas++;
+        cashPopup(valor);snd.month();confetti(60);
+        log('🏗️ OBRA: '+o.building.nome+' · '+fmtMoney(valor),'good');
+        toast('🏗️ '+o.building.nome+' entregue!','good');
+        const f=S.fieis[o.cliente]||(S.fieis[o.cliente]={metros:0,valor:0,entregas:0});
+        f.valor+=valor;f.entregas++;S.rep=clamp(S.rep+3,25,100);
+        setTimeout(()=>{S.obras=S.obras.filter(x=>x.id!==o.id);},3000);
+      }
+    }
+    if(o.status==='aguardando'&&!o.aceita&&S.t>o.prazo){
+      S.obras=S.obras.filter(x=>x.id!==o.id);log('Cliente desistiu: '+o.building.nome,'bad');
+    }
+  });
+}
+
+/* ============================================================
+   EQUIPE
+   ============================================================ */
+function contratar(tipo){
+  const t=EMPLOYEE_TYPES[tipo];
+  if(t.unique&&S.employees.some(e=>e.tipo===tipo)){toast('Já tem '+t.nome,'bad');snd.error();return;}
+  if(S.caixa<t.salario){toast('Faltam '+fmtMoney(t.salario-S.caixa),'bad');snd.error();return;}
+  S.caixa-=t.salario;cashPopup(-t.salario);
+  const nome=pick(EMP_NOMES)+' '+(tipo==='gerente'?'(Gerente)':'');
+  S.employees.push({id:novoId(),tipo,nome,salario:t.salario,icon:t.icon});
+  snd.bank();log('Contratado: '+nome+' ('+t.nome+')','money');toast('Contratado: '+nome,'good');
+}
+function demitir(id){
+  const i=S.employees.findIndex(e=>e.id===id);if(i<0)return;
+  const emp=S.employees[i];S.employees.splice(i,1);S.rep=clamp(S.rep-1,25,100);
+  snd.error();log('Demitido: '+emp.nome,'bad');
+}
+function pagarSalarios(){
+  if(!S.employees.length)return 0;
+  const total=salariesMes();
+  if(S.caixa>=total){
+    S.caixa-=total;S.fin.salarios+=total;cashPopup(-total);
+    log('Salários: '+fmtMoney(total),'money');return total;
+  }else{
+    S.rep=clamp(S.rep-8,25,100);
+    log('⚠ NÃO PAGOU SALÁRIOS! Rep −8','bad');toast('Salários atrasados!','bad');snd.alarm();
+    if(Math.random()<0.5&&S.employees.length){
+      const i=rint(0,S.employees.length-1);
+      const e=S.employees.splice(i,1)[0];log(e.nome+' pediu demissão','bad');
+    }
+    return 0;
+  }
+}
+
+/* ============================================================
+   BANCO
+   ============================================================ */
+function jurosMensal(valor,meses){
+  let base=0.030;
+  if(valor>30000)base=0.038;
+  if(valor>80000)base=0.048;
+  if(valor>200000)base=0.055;
+  base*=(1-(meses-6)/80);
+  return Math.max(0.018,base);
+}
+function calcParcela(valor,meses,taxa){
+  if(taxa<=0)return valor/meses;
+  const f=Math.pow(1+taxa,meses);
+  return valor*taxa*f/(f-1);
+}
+function limiteEmprestimo(){
+  const base=2000+S.faturamento*0.30+Math.max(0,S.rep-50)*400+nivelInfo().n*12000;
+  const usado=S.loans.reduce((a,l)=>a+l.saldo,0);
+  return Math.max(0,Math.min(base,500000)-usado);
+}
+function pedirEmprestimo(){
+  const amtEl=document.getElementById('loan-amt'),moEl=document.getElementById('loan-mo');
+  if(!amtEl||!moEl)return;
+  const valor=Number(amtEl.value),meses=Number(moEl.value);
+  if(valor>limiteEmprestimo()){toast('Acima do limite.','bad');snd.error();return;}
+  if(valor<5000){toast('Mínimo R$ 5.000.','bad');snd.error();return;}
+  if(S.loans.length>=3){toast('Máx 3 empréstimos.','bad');snd.error();return;}
+  const taxa=jurosMensal(valor,meses);const parcela=calcParcela(valor,meses,taxa);
+  S.loans.push({id:novoId(),nome:'Empréstimo '+(S.loans.length+1),saldo:valor,taxa,parcela,meses,pagas:0});
+  S.stats.emprestimos++;S.caixa+=valor;cashPopup(valor);snd.bank();
+  log('🏦 Empréstimo '+fmtMoney(valor),'money');renderBanco();
+}
+function quitarEmprestimo(id){
+  const l=S.loans.find(x=>x.id===id);if(!l)return;
+  if(S.caixa<l.saldo){toast('Faltam '+fmtMoney(l.saldo-S.caixa),'bad');snd.error();return;}
+  S.caixa-=l.saldo;cashPopup(-l.saldo);
+  S.loans=S.loans.filter(x=>x.id!==id);S.rep=Math.min(100,S.rep+2);
+  snd.cash();log('Empréstimo quitado.','good');renderBanco();
+}
+function processLoans(){
+  if(!S.loans.length)return;
+  S.loans.forEach(l=>{
+    if(l.saldo<=0.01)return;
+    l.saldo+=l.saldo*l.taxa;S.fin.juros+=l.saldo*l.taxa;
+    const pagar=Math.min(l.parcela,l.saldo);
+    if(S.caixa>=pagar){
+      S.caixa-=pagar;l.saldo-=pagar;l.pagas++;cashPopup(-pagar);
+      log('Parcela: '+fmtMoney(pagar),'money');
+    }else{
+      l.saldo+=pagar*0.05;S.rep=clamp(S.rep-5,25,100);
+      log('⚠ Parcela não paga!','bad');snd.alarm();
+    }
+  });
+  S.loans=S.loans.filter(l=>l.saldo>0.01);
+}
+
+/* ============================================================
+   SHOP
+   ============================================================ */
+const SHOP=[
+  {key:'nova_linha',nome:'Nova perfiladeira',max:3,custo:l=>Math.round(65000*Math.pow(1.7,l)),desc:'+1 linha (Xingling).'},
+  {key:'up_linhas',nome:'Upgrade de marca',max:4,custo:l=>Math.round(85000*Math.pow(1.6,l)),desc:'+1 marca em todas as linhas.'},
+  {key:'novo_caminhao',nome:'Novo caminhão',max:3,custo:l=>Math.round(38000*Math.pow(1.5,l)),desc:'+1 caminhão (F-4000).'},
+  {key:'up_frota',nome:'Upgrade de frota',max:4,custo:l=>Math.round(55000*Math.pow(1.6,l)),desc:'+1 marca em todos os caminhões.'},
+  {key:'marketing',nome:'Marketing',max:4,custo:l=>Math.round(18000*Math.pow(1.7,l)),desc:'+15% de clientes.'},
+  {key:'troca',nome:'Empilhadeira',max:2,custo:l=>Math.round(25000*Math.pow(1.8,l)),desc:'Troca de bobina rápida.'},
+  {key:'aco',nome:'Contrato siderúrgica',max:2,custo:l=>Math.round(45000*Math.pow(1.8,l)),desc:'−8% no aço.'}
+];
+function comprarUpgrade(key){
+  const u=SHOP.find(s=>s.key===key);if(!u)return;
+  const lvl=S.up[key];
+  if(lvl>=u.max){toast('Máximo.','bad');snd.error();return;}
+  const custo=u.custo(lvl);
+  if(S.caixa<custo){toast('Faltam '+fmtMoney(custo-S.caixa),'bad');snd.error();return;}
+  S.caixa-=custo;S.fin.investimento+=custo;S.up[key]=lvl+1;
+  cashPopup(-custo);snd.hammer();
+  log('Investimento: '+u.nome,'money');toast(u.nome+' instalado!','good');
+  if(key==='nova_linha')S.linhas.push(criarLinha(S.linhas.length+1,0));
+  if(key==='novo_caminhao')S.caminhoes.push(criarCaminhao(S.caminhoes.length+1,0));
+  if(key==='up_linhas')S.linhas.forEach(l=>{l.brand=Math.min(4,(l.brand||0)+1);});
+  if(key==='up_frota')S.caminhoes.forEach(c=>{c.brand=Math.min(4,(c.brand||0)+1);c.cap=truckBrand(c).cap;});
+}
+
+/* ============================================================
+   EVENTOS
+   ============================================================ */
+function rollEvento(){
+  const ev=pick(EVENTOS);ev.apply();
+  log('📣 '+ev.msg,'money');toast('📣 '+ev.msg,'money');sfxTone(660,0.15,'sine',0.05);
+}
+function updateWeather(dtH){
+  S.proxWeather-=dtH;
+  if(S.proxWeather<=0){
+    const opt=pick(['sunny','sunny','cloudy','cloudy','rain','rain','storm']);
+    if(opt!==S.weather){S.weather=opt;
+      log('Clima: '+WEATHERS[opt].label,opt==='storm'||opt==='rain'?'bad':'good');}
+    S.proxWeather=8+Math.random()*10;
+  }
+  if(S.acoMultDur>0)S.acoMultDur-=dtH;
+  else if(S.acoMult!==1)S.acoMult=1;
+}
+function checarConquistas(){
+  ACHS.forEach(a=>{
+    if(S.achs[a.id])return;
+    try{if(a.check()){S.achs[a.id]=true;
+      toast('🏆 '+a.nome+'!','good');log('🏆 '+a.nome,'good');snd.achievement();
+    }}catch(e){}
+  });
+}
+function checarNivel(){
+  const nv=nivelInfo();
+  if(nv.n>(S.lastLevel||1)){S.lastLevel=nv.n;confetti(100);snd.level();
+    toast('🎉 NÍVEL '+nv.n+'!','good');log('🎉 Nível '+nv.n,'good');}
+}
+function fechaMes(){
+  processLoans();
+  pagarSalarios();
+  const h=Object.assign({},S.fin);h.mes=S.mesIdx+1;h.atrasos=S.stats.atrasos;
+  h.lucroOp=h.receita-h.custoAco-h.custoMateriais-h.manutencoes-h.multas-h.salarios-h.juros;
+  h.lucro=h.lucroOp-h.investimento;
+  h.metros=Math.round(S.stats.metros);h.viagens=S.stats.viagens;
+  S.historico.push(h);
+  S.fin={receita:0,custoAco:0,custoMateriais:0,manutencoes:0,multas:0,investimento:0,salarios:0,juros:0};
+  S.stats.atrasos=0;S.mesIdx++;
+  log('MÊS '+h.mes+' · lucro '+fmtMoney(h.lucro),h.lucro>=0?'good':'bad');
+  toast('Mês '+h.mes+': '+fmtMoney(h.lucro),h.lucro>=0?'good':'bad');
+  if(h.lucro>=0){confetti(80);snd.month();}else{snd.broke();}
+  checarConquistas();saveGame(true);
+}
+
+/* ============================================================
+   LOOP
+   ============================================================ */
+function step(dtReal){
+  if(!S.started||S.paused)return;
+  const dtH=dtReal*0.1*S.speed;
+  S.t+=dtH;
+  if(Math.floor(S.t/MES_HORAS)>S.mesIdx)fechaMes();
+  updateWeather(dtH);
+
+  S.proxEvento-=dtH;
+  if(S.proxEvento<=0){S.proxEvento=36+Math.random()*24;if(S.started&&!S.paused)rollEvento();}
+
+  S.proxObra-=dtH;
+  if(S.proxObra<=0){
+    S.proxObra=72+Math.random()*48;
+    if(S.obras.length<3&&nivelInfo().n>=2)chegaObra();
+  }
+
+  const hora=S.t%24;
+  const comercial=hora>=7&&hora<18.5;
+  const w=WEATHERS[S.weather];
+  const vendedores=S.employees.filter(e=>e.tipo==='vendedor').length;
+  const rateMult=(0.6+S.rep/100*0.7)*(1+0.15*S.up.marketing)*(1+0.25*vendedores)*w.demand;
+
+  S.proxCliente-=dtH;
+  if(S.proxCliente<=0){
+    if(comercial&&S.clientes.length<MAXCLIENTES){
+      chegaCliente();S.proxCliente=(1.6+Math.random()*1.4)/rateMult;
+    } else S.proxCliente=0.6;
+  }
+
+  for(let i=S.clientes.length-1;i>=0;i--){
+    const c=S.clientes[i];c.paciencia-=dtH;
+    if(c.paciencia<=0){S.clientes.splice(i,1);S.rep=clamp(S.rep-3,25,100);
+      log('Cliente foi embora: '+c.nome,'bad');toast('Cliente desistiu.','bad');}
+  }
+
+  S.employees.filter(e=>e.tipo==='operador').forEach(()=>{
+    const livre=linhaLivreComAco();if(!livre)return;
+    const fila=S.pedidos.find(p=>p.status==='fila');
+    if(fila)mandarProduzir(fila.id);
+  });
+  S.employees.filter(e=>e.tipo==='motorista').forEach(()=>{
+    const livre=S.caminhoes.find(c=>c.status==='parado');if(!livre)return;
+    if(S.entregasPendentes.length){despacharMaterial(S.entregasPendentes[0].id);return;}
+    const prods=Object.keys(S.estoque).filter(k=>S.estoque[k]>0);
+    if(prods.length)despachar(prods[0]);
+  });
+
+  producao(dtH);expedicao(dtH);processarObras(dtH);
+  checarNivel();checarConquistas();
+}
+
+let ultimo=performance.now();
+let accRender=0;
+const RENDER_FPS=10;
+function frame(now){
+  let dt=(now-ultimo)/1000;ultimo=now;dt=clamp(dt,0,0.25);
+  step(dt);
+  accRender+=dt;
+  if(accRender>=1/RENDER_FPS){accRender=0;render();}
+  requestAnimationFrame(frame);
+}
+
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+const ACTIONS={
+  faturar:el=>faturar(Number(el.dataset.id)),
+  recusar:el=>recusar(Number(el.dataset.id)),
+  negociar:el=>negociar(Number(el.dataset.id)),
+  produzir:el=>mandarProduzir(Number(el.dataset.id)),
+  'prod-estoque':el=>produzirEstoque(Number(el.dataset.id)),
+  'parar-estoque':el=>pararProducaoEstoque(Number(el.dataset.id)),
+  despachar:el=>despachar(el.dataset.id),
+  'despachar-mat':el=>despacharMaterial(Number(el.dataset.id)),
+  bobina:el=>carregarBobina(Number(el.dataset.id)),
+  manutencao:el=>manutencao(Number(el.dataset.id)),
+  'comprar-bobina':()=>comprarBobina(),
+  upgrade:el=>comprarUpgrade(el.dataset.id),
+  contratar:el=>contratar(el.dataset.id),
+  demitir:el=>demitir(Number(el.dataset.id)),
+  'aceitar-obra':el=>aceitarObra(Number(el.dataset.id)),
+  'construir-obra':el=>construirObra(Number(el.dataset.id)),
+  materiais:()=>{renderMateriais();document.getElementById('overlay-materiais').classList.add('show');},
+  'mat-add':el=>matQtyAdd(Number(el.dataset.qty)),
+  'mat-comprar':()=>{
+    const sel=document.getElementById('mat-sel'),inp=document.getElementById('mat-qty-inp');
+    if(!sel||!inp)return;
+    const qty=Number(inp.value);
+    if(!qty||qty<1){toast('Quantidade inválida.','bad');return;}
+    comprarMaterial(sel.value,qty);
+  },
+  'comprar-galpao':el=>comprarGalpao(el.dataset.id),
+  save:()=>saveGame(false),
+  load:()=>{
+    if(!hasSave()){toast('Nenhum save encontrado','bad');return;}
+    if(!confirm('Carregar o save? Progresso atual será perdido.'))return;
+    if(loadGame()){render();toast('💾 Jogo carregado!','good');}
+    else toast('Erro ao carregar save','bad');
+  },
+  ajuda:()=>document.getElementById('overlay').classList.add('show'),
+  relatorio:()=>{renderRelatorio();document.getElementById('overlay-rel').classList.add('show');},
+  conquistas:()=>{renderAchs();document.getElementById('overlay-achs').classList.add('show');},
+  banco:()=>{renderBanco();document.getElementById('overlay-banco').classList.add('show');},
+  'pedir-emprestimo':()=>pedirEmprestimo(),
+  'quitar-emprestimo':el=>quitarEmprestimo(Number(el.dataset.id)),
+  'fechar-ajuda':()=>{S.started=true;document.getElementById('overlay').classList.remove('show');
+    initAudio();resumeCtx();if(Audio.musicOn)startMusic();updateAudioButtons();startAutoSave();},
+  'fechar-relatorio':()=>document.getElementById('overlay-rel').classList.remove('show'),
+  'fechar-conquistas':()=>document.getElementById('overlay-achs').classList.remove('show'),
+  'fechar-banco':()=>document.getElementById('overlay-banco').classList.remove('show'),
+  'fechar-materiais':()=>document.getElementById('overlay-materiais').classList.remove('show'),
+  music:()=>{initAudio();resumeCtx();Audio.musicOn=!Audio.musicOn;
+    if(Audio.music){Audio.music.gain.cancelScheduledValues(Audio.ctx.currentTime);
+      Audio.music.gain.linearRampToValueAtTime(Audio.musicOn?Audio.musicVol:0,Audio.ctx.currentTime+0.3);}
+    if(Audio.musicOn&&!Audio.playing)startMusic();
+    updateAudioButtons();toast(Audio.musicOn?'🎵 Música ligada':'🎵 Música desligada');},
+  sfx:()=>{initAudio();resumeCtx();Audio.sfxOn=!Audio.sfxOn;
+    if(Audio.sfx){Audio.sfx.gain.cancelScheduledValues(Audio.ctx.currentTime);
+      Audio.sfx.gain.linearRampToValueAtTime(Audio.sfxOn?Audio.sfxVol:0,Audio.ctx.currentTime+0.2);}
+    updateAudioButtons();if(Audio.sfxOn)snd.ding();
+    toast(Audio.sfxOn?'🔊 Efeitos ligados':'🔇 Efeitos desligados');},
+  pausa:()=>{S.paused=!S.paused;document.getElementById('btn-pausa').textContent=S.paused?'Retomar':'Pausar';
+    if(Audio.music){Audio.music.gain.cancelScheduledValues(Audio.ctx.currentTime);
+      const target=(S.paused||!Audio.musicOn)?0:Audio.musicVol;
+      Audio.music.gain.linearRampToValueAtTime(target,Audio.ctx.currentTime+0.4);}},
+  vel:()=>{S.speed=S.speed>=3?1:S.speed+1;document.getElementById('btn-vel').textContent=S.speed+'×';},
+  reset:()=>{S.paused=true;document.getElementById('overlay-reset').classList.add('show');}
+};
+document.getElementById('btn-cancelar-reset').addEventListener('click',()=>{
+  document.getElementById('overlay-reset').classList.remove('show');
+  S.paused=false;document.getElementById('btn-pausa').textContent='Pausar';
+});
+document.getElementById('btn-confirmar-reset').addEventListener('click',()=>{
+  deleteSave();location.reload();
+});
+
+document.addEventListener('click',e=>{
+  initAudio();resumeCtx();
+  const el=e.target.closest('[data-act]');if(!el)return;
+  const fn=ACTIONS[el.dataset.act];if(fn)fn(el);
+});
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();ACTIONS.pausa();}
+  if(e.key==='1'||e.key==='2'||e.key==='3'){S.speed=Number(e.key);
+    document.getElementById('btn-vel').textContent=S.speed+'×';}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();ACTIONS.save();}
+  if(e.key==='m'||e.key==='M')ACTIONS.music();
+  if(e.key==='s'||e.key==='S')ACTIONS.sfx();
+  if(e.key==='b'||e.key==='B')ACTIONS.banco();
+  if(e.key==='t'||e.key==='T')ACTIONS.materiais();
+});
+document.addEventListener('visibilitychange',()=>{
+  if(!Audio.ctx)return;
+  if(document.hidden){if(Audio.ctx.state==='running')Audio.ctx.suspend();}
+  else{if(Audio.ctx.state==='suspended')Audio.ctx.resume();}
+});
+document.addEventListener('change',e=>{if(e.target.id==='mat-sel')selecionarMaterialUI();});
+document.addEventListener('input',e=>{if(e.target.id==='mat-qty-inp')atualizarMatTotalUI();});
+
+document.getElementById('load-continue-btn').addEventListener('click',()=>{
+  if(loadGame()){
+    hideLoadingScreen();
+    document.getElementById('overlay').classList.remove('show');
+    toast('💾 Jogo carregado!','good');
+    setTimeout(()=>toast('Bem-vindo de volta!','good'),500);
+    startAutoSave();
+  }else{toast('Erro ao carregar save','bad');}
+});
+document.getElementById('load-new-btn').addEventListener('click',()=>{
+  if(hasSave()){if(!confirm('Já existe um save. Apagar e começar novo jogo?'))return;deleteSave();}
+  hideLoadingScreen();
+});
+
+/* ============================================================
+   INÍCIO
+   ============================================================ */
+function iniciar(){
+  S.linhas.push(criarLinha(1,0));
+  S.caminhoes=[criarCaminhao(1,0)];
+  S.linhas[0].coil={id:novoId(),kg:4000,cap:4000};
+  S.bobinas=[];
+  S.estoque={};S.estoqueValores={};S.estoqueMateriais={};
+  S.entregasPendentes=[];S.galpoes=[];
+  document.getElementById('overlay').classList.add('show');
+  log('Parecis Telha iniciada · caixa '+fmtMoney(S.caixa)+' · rep '+Math.round(S.rep)+'%','good');
+  log('⚠ Você pode fabricar telhas E tijolos/blocos para o estoque.','bad');
+  const sel=document.getElementById('mat-sel');
+  if(sel)sel.innerHTML=ORDEM_MATERIAIS.map(k=>'<option value="'+k+'">'+MATERIAIS[k].icon+' '+MATERIAIS[k].nome+' · '+fmtMoney(MATERIAIS[k].preco)+'</option>').join('');
+  updateAudioButtons();
+  requestAnimationFrame(t=>{ultimo=t;requestAnimationFrame(frame);});
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const CACHE={};
+function setHTML(id,html){
+  if(CACHE[id]===html)return;
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=html;CACHE[id]=html;
+}
+let displayCash=8000;
+function tickCash(){
+  displayCash+=(S.caixa-displayCash)*0.22;
+  if(Math.abs(displayCash-S.caixa)<1)displayCash=S.caixa;
+  const el=document.getElementById('st-caixa');if(el)el.textContent=fmtMoney(displayCash);
+}
+function updateSky(){
+  const h=S.t%24;let tint='transparent';
+  if(h<5)tint='rgba(10,20,70,.35)';
+  else if(h<7)tint='rgba(90,30,80,.15)';
+  else if(h<17)tint='transparent';
+  else if(h<19)tint='rgba(200,90,20,.14)';
+  else if(h<22)tint='rgba(70,30,90,.18)';
+  else tint='rgba(10,20,70,.3)';
+  document.body.style.setProperty('--sky-tint',tint);
+}
+function renderTopo(){
+  const t=totais();
+  const lucro=t.receita-t.custoAco-t.custoMateriais-t.manutencoes-t.multas-t.investimento-t.salarios-t.juros;
+  const margem=t.receita>0?lucro/t.receita*100:0;
+  setHTML('relogio','Dia '+(Math.floor(S.t/24)+1)+' · '+fmtHora(S.t)+' · Mês '+(S.mesIdx+1));
+  tickCash();
+  const debt=S.loans.reduce((a,l)=>a+l.saldo,0);
+  setHTML('st-divida',debt>0?fmtMoney(debt):'—');
+  const aReceber=S.pedidos.reduce((a,p)=>a+(p.valor-(p.sinalPago||0))*(1-p.metrosFeitos/p.metros),0)
+    +Object.values(S.estoqueValores).reduce((a,v)=>a+v,0)
+    +S.entregasPendentes.reduce((a,e)=>a+e.valor,0)
+    +S.caminhoes.filter(c=>c.carga).reduce((a,c)=>a+c.carga.valor,0);
+  setHTML('st-receber',fmtMoney(aReceber));
+  setHTML('st-lucro',fmtMoney(lucro)+' · '+(margem>=0?'+':'')+Math.round(margem)+'%');
+  const kg=S.bobinas.reduce((a,b)=>a+b.kg,0)+S.linhas.reduce((a,l)=>a+(l.coil?l.coil.kg:0),0);
+  setHTML('st-bobinas',fmtT(kg));
+  const usado=espacoUsado();const cap=capArmazem();
+  const pct=cap>0?usado/cap*100:0;
+  const armB=document.getElementById('st-arm');
+  if(armB)armB.textContent=fmtNum(usado)+'/'+fmtNum(cap);
+  const armStat=document.getElementById('stat-arm');
+  if(armStat)armStat.classList.toggle('over',pct>=95);
+  setHTML('st-rep',Math.round(S.rep)+'%');
+  const nv=nivelInfo();
+  setHTML('st-nivel','Nv '+nv.n+(nv.prox?' · '+Math.round(nv.pct*100)+'%':' · máx'));
+  setHTML('st-weather',WEATHERS[S.weather].icon);
+  setHTML('st-equipe',S.employees.length);
+  setHTML('st-achs',Object.keys(S.achs).length+'/'+ACHS.length);
+}
+function renderClientes(){
+  setHTML('badge-clientes',S.clientes.length);
+  if(!S.clientes.length){
+    setHTML('lista-clientes','<div class="estado-vazio">Sem clientes.</div>');
+    return;
+  }
+  setHTML('lista-clientes',S.clientes.map(c=>{
+    const pct=clamp(c.paciencia/c.pacienciaMax,0,1)*100;
+    const cls=pct<35?'time low':'time';
+    const mood=pct>65?'😊':pct>30?'😐':'😠';
+    if(c.tipo==='material'){
+      const mat=MATERIAIS[c.materialKey];
+      const estoque=S.estoqueMateriais[c.materialKey]||0;
+      const podeFat=estoque>=c.qty;
+      return '<div class="card material">'
+        +'<div class="row"><div class="who"><div class="avatar" data-mood="'+mood+'">'+c.nome.charAt(0)+'</div>'
+        +'<b title="'+c.nome+'">'+c.nome+'</b></div>'
+        +'<span class="tag mat">🧱 material</span></div>'
+        +'<div class="spec">'+mat.icon+' '+fmtNum(c.qty)+'x '+mat.nome+' · '+fmtMoney(c.precoUnit)+'/un</div>'
+        +'<div class="row" style="margin-top:3px">'
+        +'<span class="tiny">Estoque: <b style="color:'+(podeFat?'#7ef7c8':'#ff8b95')+'">'+fmtNum(estoque)+'/'+fmtNum(c.qty)+'</b></span>'
+        +'<span class="price">'+fmtMoney(c.valor)+'</span></div>'
+        +'<div class="bar '+cls+'"><i style="width:'+pct+'%"></i></div>'
+        +'<div class="tiny"><span>Paciência</span><b>'+Math.round(pct)+'%</b></div>'
+        +(c.negociado?'':'<div style="margin-top:4px"><button class="btn tiny" data-act="negociar" data-id="'+c.id+'">💬 desconto</button></div>')
+        +'<div class="actions"><button class="btn primary mini" data-act="faturar" data-id="'+c.id+'"'
+          +(podeFat?'':' disabled')+'>'+(podeFat?'Faturar':'Sem estoque')+'</button>'
+        +'<button class="btn ghost mini" data-act="recusar" data-id="'+c.id+'">X</button></div></div>';
+    }
+    const prod=PRODUCTS[c.produto];
+    const nivel=fielDe(c.nome);
+    return '<div class="card cliente'+(nivel==='ouro'?' fiel':'')+(c.premium?' premium':'')+'">'
+      +'<div class="row"><div class="who"><div class="avatar" data-mood="'+mood+'">'+c.nome.charAt(0)+'</div>'
+      +'<b title="'+c.nome+'">'+c.nome+'</b></div>'
+      +(c.premium?'<span class="tag vip">⭐VIP</span>'
+        :nivel==='ouro'?'<span class="tag fiel">ouro</span>'
+        :nivel==='prata'?'<span class="tag fiel">fiel</span>'
+        :c.urgente?'<span class="tag stop">urgente</span>':'<span class="tag">normal</span>')+'</div>'
+      +'<div class="spec">'+prod.icon+' '+prod.nome+' · '+c.metros+'m · '+fmtMoney(c.precoUnit)+'/m</div>'
+      +'<div class="row" style="margin-top:3px"><span class="tiny">Pedido'+(c.sinal?' · sinal':'')+'</span>'
+      +'<span class="price">'+fmtMoney(c.valor)+'</span></div>'
+      +'<div class="bar '+cls+'"><i style="width:'+pct+'%"></i></div>'
+      +'<div class="tiny"><span>Paciência</span><b>'+Math.round(pct)+'%</b></div>'
+      +(c.negociado?'':'<div style="margin-top:4px"><button class="btn tiny" data-act="negociar" data-id="'+c.id+'">💬 desconto</button></div>')
+      +'<div class="actions"><button class="btn primary mini" data-act="faturar" data-id="'+c.id+'">Faturar</button>'
+      +'<button class="btn ghost mini" data-act="recusar" data-id="'+c.id+'">X</button></div></div>';
+  }).join(''));
+}
+function renderPedidos(){
+  setHTML('badge-pedidos',S.pedidos.length);
+  if(!S.pedidos.length){
+    setHTML('lista-pedidos','<div class="estado-vazio">Nenhum pedido faturado.</div>');
+    return;
+  }
+  setHTML('lista-pedidos',S.pedidos.map(p=>{
+    const prod=PRODUCTS[p.produto];
+    const livre=linhaLivreComAco();
+    const pct=p.metros>0?(p.metrosFeitos/p.metros*100):0;
+    const emProd=p.status==='producao';
+    return '<div class="card'+(p.premium?' premium':'')+'">'
+      +'<div class="row"><b>'+p.cliente+'</b>'
+      +(emProd?'<span class="tag run">'+(p.linha||'—')+'</span>':'<span class="tag wait">fila</span>')+'</div>'
+      +'<div class="spec">'+prod.icon+' '+prod.nome+' · '+p.metros+'m · D'+(Math.floor(p.prazo/24)+1)+'</div>'
+      +'<div class="row" style="margin-top:2px"><span class="tiny">Valor'+(p.sinalPago?' · sinal':'')+'</span>'
+      +'<span class="price">'+fmtMoney(p.valor)+'</span></div>'
+      +(emProd
+        ?'<div class="bar blue"><i style="width:'+pct+'%"></i></div>'
+          +'<div class="tiny"><span>Produzindo</span><b>'+Math.round(p.metrosFeitos)+'/'+p.metros+'</b></div>'
+        :'<div class="actions"><button class="btn ok mini" data-act="produzir" data-id="'+p.id+'"'+(livre?'':' disabled')+'>'
+          +(livre?'Produzir':'Sem linha')+'</button></div>')+'</div>';
+  }).join(''));
+}
+function renderRack(){
+  const chips=S.bobinas.map(b=>'<span class="bobchip">'+fmtT(b.kg)+'</span>').join('');
+  const custo=Math.round(7500*precoAco());
+  const acoTxt=S.acoMult!==1?'<span class="tag '+(S.acoMult>1?'stop':'run')+'" style="font-size:8px">'+(S.acoMult>1?'+':'')+Math.round((S.acoMult-1)*100)+'%</span>':'';
+  setHTML('rack','<span class="lbl">Rack '+acoTxt+'</span>'
+    +(chips||'<span class="empty">vazio</span>')
+    +'<button class="btn mini" data-act="comprar-bobina" style="margin-left:auto">+Bobina '+fmtMoney(custo)+'</button>');
+}
+function renderLinhas(){
+  const livres=S.linhas.filter(l=>!l.pedidoId&&!l.isStockProd&&l.trocando<=0&&!l.quebrada&&l.conserto<=0&&l.coil&&l.coil.kg>1).length;
+  const badge=document.getElementById('badge-linhas');
+  if(badge){badge.textContent=livres+' livre'+(livres!==1?'s':'');badge.classList.toggle('free',livres>0);}
+  setHTML('lista-linhas',S.linhas.map(l=>{
+    const p=l.pedidoId?S.pedidos.find(x=>x.id===l.pedidoId):null;
+    const brand=machineBrand(l);
+    const temAco=!!(l.coil&&l.coil.kg>1);
+    const kg=l.coil?l.coil.kg:0,cap=l.coil?l.coil.cap:1;
+    const pctAco=clamp(kg/cap*100,0,100);
+    const ativo=!!(p&&l.trocando<=0&&!l.quebrada&&l.conserto<=0) || (l.isStockProd&&!l.quebrada&&l.conserto<=0);
+    
+    let estado='<span class="tag">parada</span>';
+    if(l.quebrada)estado='<span class="tag stop">quebrada</span>';
+    else if(l.conserto>0)estado='<span class="tag stop">conserto</span>';
+    else if(l.trocando>0)estado='<span class="tag wait">trocando</span>';
+    else if(p)estado='<span class="tag run">produzindo</span>';
+    else if(l.isStockProd)estado='<span class="tag run" style="background:rgba(63,140,255,.2);color:#9ec7ff;border-color:rgba(63,140,255,.4)">Estoque</span>';
+    else if(!temAco)estado='<span class="tag stop">sem bobina</span>';
+
+    const custoM=custoManutencao(l);
+    const podeM=l.quebrada||l.desgaste>=4;
+    const produtosOpts=ORDEM_PRODUTOS.map(k=>`<option value="${k}" ${l.produtoAtual===k?'selected':''}>${PRODUCTS[k].nome}</option>`).join('');
+    
+    let acaoHtml = '';
+    if (!p && !l.isStockProd && !l.quebrada && l.conserto<=0) {
+      acaoHtml = `
+        <div style="margin-top:3px; display:flex; gap:4px;">
+          <select class="mat-sel" style="padding:2px 5px; font-size:10px; flex:1; margin-bottom:0;" data-line="${l.id}">
+            ${produtosOpts}
+          </select>
+          <input type="number" id="stock-qty-${l.id}" value="200" min="1" max="5000" style="width:60px; background:#0d1727; border:1px solid #2a3c5e; color:#cfe0ff; border-radius:6px; padding:2px 5px; font-size:10px; outline:none; font-family:inherit; font-variant-numeric:tabular-nums;" title="Qtd (1-5000)">
+        </div>
+        <div class="actions">
+          <button class="btn primary mini" data-act="prod-estoque" data-id="${l.id}" ${temAco?'':'disabled'}>Fab. Estoque</button>
+        </div>
+      `;
+    } else if (l.isStockProd) {
+      const pctEst = (l.stockProgress / l.stockTarget) * 100;
+      acaoHtml = `
+        <div class="tiny"><span>Estoque: ${PRODUCTS[l.produtoAtual].nome}</span><b>${Math.round(l.stockProgress)}/${l.stockTarget}</b></div>
+        <div class="bar blue"><i style="width:${pctEst}%"></i></div>
+        <div class="actions">
+          <button class="btn danger mini" data-act="parar-estoque" data-id="${l.id}">Parar</button>
+        </div>
+      `;
+    }
+
+    return '<div class="linha'+(l.quebrada?' broken':'')+(p?' active':'')+(l.isStockProd?' stock-active':'')+'">'
+      +'<div class="lh"><span class="nm">'+l.nome+' <span class="tag brand" style="font-size:8px;color:'+brand.cor+';border-color:'+brand.cor+'55">'+brand.nome+'</span></span>'+estado+'</div>'
+      +'<div class="machine">'
+      +'<div class="coilwrap'+(ativo?' spinning':'')+'">'+(temAco?coilSVG(pctAco/100):coilSVG(0))+'</div>'
+      +'<div class="strip '+(ativo?'on':'')+'"><i></i></div>'
+      +'<div class="press '+(ativo?(p?'active':'stock-on'):'')+'">ROLOS</div></div>'
+      +'<div class="bar time"><i style="width:'+pctAco+'%"></i></div>'
+      +'<div class="tiny"><span>Aço</span><b>'+(l.coil?fmtT(kg)+'/'+fmtT(cap):'vazio')+'</b></div>'
+      +(p?'<div class="tiny"><span>'+PRODUCTS[p.produto].nome+'</span><b>'+Math.round(p.metrosFeitos)+'/'+p.metros+'</b></div>':'')
+      +'<div class="bar wear'+(l.desgaste>70?' hot':'')+'"><i style="width:'+l.desgaste.toFixed(0)+'%"></i></div>'
+      +'<div class="tiny"><span>Desgaste · '+brand.vel+'m/h</span><b style="color:'+(l.desgaste>85?'#ff8b95':l.desgaste>70?'#ffca63':'#cfe0ff')+'">'+Math.round(l.desgaste)+'%</b></div>'
+      +acaoHtml
+      +'<div class="actions" style="margin-top:4px">'
+      +(!temAco&&!l.quebrada&&l.conserto<=0?'<button class="btn primary mini" data-act="bobina" data-id="'+l.id+'">Bobina</button>':'')
+      +(podeM?'<button class="btn '+(l.quebrada?'primary mini':'mini')+'" data-act="manutencao" data-id="'+l.id+'"'+(S.caixa>=custoM?'':' disabled')+'>'+(l.quebrada?'Conserto':'Manut.')+' '+fmtMoney(custoM)+'</button>':'<span class="tag run" style="font-size:8px">ok</span>')
+      +'</div></div>';
+  }).join(''));
+  
+  document.querySelectorAll('select[data-line]').forEach(sel=>{
+    if(sel.dataset.bound)return;sel.dataset.bound='1';
+    sel.addEventListener('change',()=>{
+      const l=S.linhas.find(x=>x.id===Number(sel.dataset.line));
+      if(l)l.produtoAtual=sel.value;
+    });
+  });
+}
+function renderExpedicao(){
+  const cams=S.caminhoes.map(c=>{
+    const ocupado=c.status==='viagem';
+    const pct=ocupado?clamp(c.prog*100,0,100):0;
+    const brand=truckBrand(c);
+    return '<div class="truck '+(ocupado?'moving':'idle')+'">'+truckSVG(c.brand)
+      +'<div class="info"><b>'+c.nome+' <span class="tag brand" style="font-size:7.5px;color:'+brand.cor+';border-color:'+brand.cor+'55">'+brand.nome+'</span></b>'
+      +'<div class="tiny"><span>'+(ocupado?'→ '+c.destino:'parado')+'</span><b>'+(ocupado?Math.round(c.carga.qty)+'':'')+'</b></div>'
+      +'<div class="road"><i style="width:'+pct+'%"></i></div></div></div>';
+  }).join('');
+  setHTML('lista-caminhoes',cams);
+  const livre=S.caminhoes.find(c=>c.status==='parado');
+  if(!S.entregasPendentes.length){setHTML('lista-entregas-mat','');}
+  else{
+    setHTML('lista-entregas-mat',S.entregasPendentes.map(e=>{
+      const mat=MATERIAIS[e.materialKey];
+      return '<div class="estoque-item" style="border-color:rgba(63,140,255,.4)">'
+        +'<div class="row"><b title="'+e.cliente+'">'+e.cliente+'</b><span class="tag mat">'+fmtNum(e.qty)+'x</span></div>'
+        +'<div class="tiny"><span>'+mat.icon+' '+mat.nome+'</span><span>'+fmtMoney(e.valor)+'</span></div>'
+        +'<div class="actions"><button class="btn ok mini" data-act="despachar-mat" data-id="'+e.id+'"'
+        +(livre?'':' disabled')+'>'+(livre?'Despachar':'Sem caminhão')+'</button></div></div>';
+    }).join(''));
+  }
+  let html='';let grupos=0;
+  Object.keys(S.estoque).filter(k=>S.estoque[k]>0).forEach(k=>{
+    grupos++;const prod=PRODUCTS[k];const qty=S.estoque[k];const val=S.estoqueValores[k]||0;
+    html+='<div class="group"><div class="group-head"><span>'+prod.icon+' '+prod.nome+'</span>'
+      +'<b>'+Math.round(qty)+'m</b></div>'
+      +'<div class="estoque-item"><div class="tiny"><span>Valor</span><span>'+fmtMoney(val)+'</span></div>'
+      +'<div class="actions"><button class="btn ok mini" data-act="despachar" data-id="'+k+'"'
+      +(livre?'':' disabled')+'>'+(livre?'Despachar':'Sem caminhão')+'</button></div></div></div>';
+  });
+  if(!grupos)html='<div class="estado-vazio">Pátio vazio.</div>';
+  setHTML('lista-estoque',html);
+  setHTML('badge-estoque',S.entregasPendentes.length+Object.keys(S.estoque).filter(k=>S.estoque[k]>0).length);
+}
+function renderObras(){
+  setHTML('badge-obras',S.obras.length);
+  if(!S.obras.length){
+    setHTML('lista-obras','<div class="estado-vazio">Nenhum projeto. Aparecem a partir do Nv 2.</div>');
+    return;
+  }
+  setHTML('lista-obras',S.obras.map(o=>{
+    const b=o.building;
+    let statusTag='<span class="tag wait">proposta</span>';
+    if(o.status==='construindo')statusTag='<span class="tag run">construindo</span>';
+    if(o.status==='pronto')statusTag='<span class="tag run">✓</span>';
+    
+    const needsHtml=Object.entries(b.needs).map(([p,n])=>{
+      const isMat=MATERIAIS[p] || PRODUCTS[p]?.cat==='mat';
+      const have=isMat?(S.estoqueMateriais[p]||0):(S.estoque[p]||0);
+      const ok=have>=n;
+      const icon=isMat?MATERIAIS[p]?.icon:PRODUCTS[p]?.icon;
+      const nm=isMat?MATERIAIS[p]?.nome:PRODUCTS[p]?.nome;
+      return '<span class="obra-need '+(ok?'ok':'falta')+'" title="'+nm+'">'+icon+' '+nm+': '+Math.min(have,n)+'/'+n+'</span>';
+    }).join('');
+    
+    const podeConstruir=o.aceita&&temTodosMateriais(o)&&o.status==='aguardando';
+    return '<div class="obra-card">'
+      +'<div class="ttl"><b>'+b.nome+'</b>'+statusTag+'</div>'
+      +'<div class="tiny"><span>'+o.cliente+'</span><b style="color:#7ef7c8">'+fmtMoney(o.valorFinal)+'</b></div>'
+      +'<div class="obra-needs">'+needsHtml+'</div>'
+      +(o.status==='construindo'?'<div class="bar blue"><i style="width:'+o.progresso+'%"></i></div>'
+        +'<div class="tiny"><span>Progresso</span><b>'+Math.round(o.progresso)+'%</b></div>':'')
+      +(!o.aceita?'<div class="actions"><button class="btn primary mini" data-act="aceitar-obra" data-id="'+o.id+'">Aceitar</button></div>'
+        :(o.status==='aguardando'?'<div class="actions"><button class="btn '+(podeConstruir?'ok':'')+' mini" data-act="construir-obra" data-id="'+o.id+'"'
+          +(podeConstruir?'':' disabled')+'>'+(podeConstruir?'🔨 Construir':'Faltam')+'</button></div>':''))
+      +'</div>';
+  }).join(''));
+}
+function renderShop(){
+  setHTML('shop',SHOP.map(u=>{
+    const lvl=S.up[u.key];const max=lvl>=u.max;const custo=max?0:u.custo(lvl);const ok=S.caixa>=custo;
+    return '<div class="up'+(max?' max':'')+'">'
+      +'<div class="row"><b>'+u.nome+'</b><span class="tag">'+lvl+'/'+u.max+'</span></div>'
+      +'<small>'+u.desc+'</small>'
+      +(max?'<div class="cost">Máximo</div><button class="btn mini" disabled>—</button>'
+        :'<div class="cost">'+fmtMoney(custo)+'</div>'
+          +'<button class="btn '+(ok?'primary':'')+' mini" data-act="upgrade" data-id="'+u.key+'"'
+          +(ok?'':' disabled')+'>Comprar</button>')+'</div>';
+  }).join(''));
+}
+function renderMateriaisPanel(){
+  const el=document.getElementById('mat-panel');if(!el)return;
+  const keys=Object.keys(S.estoqueMateriais).filter(k=>S.estoqueMateriais[k]>0);
+  if(!keys.length){
+    el.innerHTML='<div class="estado-vazio" style="padding:8px 4px;font-size:10.5px">Sem materiais em estoque.<br>Clique <b>🧱 Materiais</b> ou fabrique.</div>';
+    return;
+  }
+  const usado=espacoUsado();const cap=capArmazem();
+  let html='<div class="tiny" style="margin-bottom:4px"><span>Ocupação</span><b>'+fmtNum(usado)+' / '+fmtNum(cap)+'</b></div>'
+    +'<div class="bar arm"><i style="width:'+Math.min(100,usado/cap*100)+'%"></i></div>';
+  keys.forEach(k=>{
+    const mat=MATERIAIS[k] || PRODUCTS[k];
+    const qty=S.estoqueMateriais[k];
+    html+='<div class="mat-row"><div class="icon">'+mat.icon+'</div>'
+      +'<div class="info"><b>'+mat.nome+'</b><small>peso '+mat.peso+'</small></div>'
+      +'<div class="stock"><b>'+fmtNum(qty)+'</b></div></div>';
+  });
+  html+='<button class="btn mat-btn" data-act="materiais" style="width:100%;margin-top:5px">🧱 Comprar mais</button>';
+  el.innerHTML=html;
+}
+function renderEquipe(){
+  const html=[];
+  if(S.employees.length){
+    html.push('<div class="tiny" style="margin-bottom:4px"><span>Equipe ('+S.employees.length+')</span><b>'+fmtMoney(salariesMes())+'/mês</b></div>');
+    html.push(S.employees.map(e=>'<div class="emp-card"><div class="icon">'+e.icon+'</div>'
+      +'<div class="info"><b>'+e.nome+'</b><small>'+EMPLOYEE_TYPES[e.tipo].nome+'</small></div>'
+      +'<button class="btn tiny danger" data-act="demitir" data-id="'+e.id+'">X</button></div>').join(''));
+  }
+  html.push('<div class="tiny" style="margin:6px 0 4px"><span>Contratar</span></div>');
+  Object.entries(EMPLOYEE_TYPES).forEach(([key,t])=>{
+    const jatem=t.unique&&S.employees.some(e=>e.tipo===key);
+    const pode=S.caixa>=t.salario&&!jatem;
+    html.push('<div class="emp-hire"><div class="icon">'+t.icon+'</div>'
+      +'<div class="info"><b>'+t.nome+'</b><small>'+t.desc+'</small>'
+      +'<span class="sal">'+fmtMoney(t.salario)+'/mês</span></div>'
+      +'<button class="btn '+(pode?'primary':'')+' tiny" data-act="contratar" data-id="'+key+'"'
+      +(pode?'':' disabled')+'>'+(jatem?'✓':'+')+'</button></div>');
+  });
+  setHTML('equipe',html.join(''));
+}
+function renderResultados(){
+  const f=S.fin;
+  const lucroOp=f.receita-f.custoAco-f.custoMateriais-f.manutencoes-f.multas-f.salarios-f.juros;
+  const lucro=lucroOp-f.investimento;const margem=f.receita>0?lucroOp/f.receita*100:0;
+  const res=(k,v,cls)=>'<div class="r'+(cls?' '+cls:'')+'"><span>'+k+'</span><b>'+v+'</b></div>';
+  setHTML('resultados','<div class="res">'
+    +res('Receita',fmtMoney(f.receita))
+    +res('Aço','− '+fmtMoney(f.custoAco))
+    +(f.custoMateriais>0?res('Materiais','− '+fmtMoney(f.custoMateriais)):'')
+    +res('Manutenção','− '+fmtMoney(f.manutencoes))
+    +res('Salários','− '+fmtMoney(f.salarios))
+    +(f.juros>0?res('Juros','− '+fmtMoney(f.juros)):'')
+    +res('Lucro op.',fmtMoney(lucroOp)+' · '+(margem>=0?'+':'')+Math.round(margem)+'%','total')
+    +res('Investimentos','− '+fmtMoney(f.investimento))
+    +res('Caixa mês',fmtMoney(lucro),'total')
+    +res('Metros',Math.round(S.stats.metros)+'m')
+    +res('Obras',S.stats.obrasConcluidas)
+    +'</div>');
+}
+function renderRelatorio(){
+  const el=document.getElementById('rel-body');if(!el)return;
+  const t=totais();const hist=S.historico.slice(-4);const f=S.fin;
+  const lucroOp=f.receita-f.custoAco-f.custoMateriais-f.manutencoes-f.multas-f.salarios-f.juros;
+  const lucro=lucroOp-f.investimento;const margem=f.receita>0?lucroOp/f.receita*100:0;
+  const nv=nivelInfo();
+  const lucroTotal=t.receita-t.custoAco-t.custoMateriais-t.manutencoes-t.multas-t.investimento-t.salarios-t.juros;
+  const debt=S.loans.reduce((a,l)=>a+l.saldo,0);
+  el.innerHTML='<div class="rep-head"><h2>Mês '+(S.mesIdx+1)+' — parcial</h2>'
+    +'<span class="selo">Nv '+nv.n+' · rep '+Math.round(S.rep)+'%</span></div>'
+    +'<div class="rep-grid">'
+    +'<div class="r"><span>Receita</span><b>'+fmtMoney(f.receita)+'</b></div>'
+    +'<div class="r"><span>Aço</span><b>'+fmtMoney(f.custoAco)+'</b></div>'
+    +'<div class="r"><span>Materiais</span><b>'+fmtMoney(f.custoMateriais)+'</b></div>'
+    +'<div class="r"><span>Manutenção</span><b>'+fmtMoney(f.manutencoes)+'</b></div>'
+    +'<div class="r"><span>Salários</span><b>'+fmtMoney(f.salarios)+'</b></div>'
+    +'<div class="r"><span>Multas</span><b>'+fmtMoney(f.multas)+'</b></div>'
+    +'<div class="r"><span>Juros</span><b>'+fmtMoney(f.juros)+'</b></div>'
+    +'<div class="r"><span>Investimentos</span><b>'+fmtMoney(f.investimento)+'</b></div>'
+    +'<div class="r destaque"><span>Caixa do mês</span><b>'+fmtMoney(lucro)+' ('+Math.round(margem)+'%)</b></div>'
+    +'<div class="r"><span>Dívida</span><b style="color:'+(debt>0?'#ff8b95':'#8ba0c4')+'">'+fmtMoney(debt)+'</b></div>'
+    +'<div class="r"><span>Armazém</span><b>'+fmtNum(espacoUsado())+' / '+fmtNum(capArmazem())+'</b></div>'
+    +'<div class="r"><span>Viagens</span><b>'+S.stats.viagens+'</b></div>'
+    +'<div class="r"><span>Obras</span><b>'+S.stats.obrasConcluidas+'</b></div>'
+    +'<div class="r"><span>Equipe</span><b>'+S.employees.length+'</b></div>'
+    +'</div>'
+    +'<p class="muted" style="margin-top:12px">Acumulado: receita '+fmtMoney(t.receita)+' · caixa '+fmtMoney(lucroTotal)+'</p>'
+    +(hist.length?'<h2 style="font-size:14px;margin-top:14px">Meses fechados</h2>'
+      +hist.map(h=>'<div class="r" style="display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0;border-bottom:1px dashed rgba(255,255,255,.07)">'
+        +'<span style="color:#8ba0c4">Mês '+h.mes+' · '+h.viagens+' viagens</span>'
+        +'<b style="color:'+((h.lucro??0)>=0?'#7ef7c8':'#ff8b95')+'">'+fmtMoney(h.lucro)+'</b></div>').join(''):'');
+}
+function renderAchs(){
+  const un=ACHS.filter(a=>S.achs[a.id]).length;
+  const prog=document.getElementById('achs-progresso');
+  if(prog)prog.textContent=un+' de '+ACHS.length+' desbloqueadas.';
+  const list=document.getElementById('achs-list');if(!list)return;
+  list.innerHTML=ACHS.map(a=>{
+    const on=!!S.achs[a.id];
+    return '<div class="ach'+(on?' on':'')+'"><div class="icon">'+a.icon+'</div>'
+      +'<div><b>'+a.nome+'</b><small>'+a.desc+'</small></div></div>';
+  }).join('');
+}
+function renderBanco(){
+  const el=document.getElementById('bank-content');if(!el)return;
+  const limit=limiteEmprestimo();const debt=S.loans.reduce((a,l)=>a+l.saldo,0);
+  let html='<div class="rep-grid">'
+    +'<div class="r"><span>Crédito disponível</span><b style="color:#7ef7c8">'+fmtMoney(limit)+'</b></div>'
+    +'<div class="r"><span>Dívida atual</span><b style="color:'+(debt>0?'#ff8b95':'#8ba0c4')+'">'+fmtMoney(debt)+'</b></div>'
+    +'</div>';
+  if(S.loans.length){
+    html+='<h3>Empréstimos ativos</h3>';
+    html+=S.loans.map(l=>{
+      const pct=l.pagas/l.meses*100;
+      return '<div class="loan-row">'
+        +'<div class="top"><b>'+l.nome+'</b><span class="tag">'+(l.taxa*100).toFixed(2)+'%/mês</span></div>'
+        +'<div class="tiny"><span>Saldo: '+fmtMoney(l.saldo)+'</span><span>Parcela: '+fmtMoney(l.parcela)+'</span></div>'
+        +'<div class="bar"><i style="width:'+pct+'%"></i></div>'
+        +'<div class="tiny"><span>Parcelas: '+l.pagas+'/'+l.meses+'</span></div>'
+        +'<div class="actions"><button class="btn mini" data-act="quitar-emprestimo" data-id="'+l.id+'"'
+        +(S.caixa>=l.saldo?'':' disabled')+'>Quitar '+fmtMoney(l.saldo)+'</button></div></div>';
+    }).join('');
+  }
+  if(limit>=5000&&S.loans.length<3){
+    const sug=Math.min(20000,limit);
+    html+='<h3>Novo empréstimo</h3>'
+      +'<div class="slider-wrap"><label>Valor <b id="loan-amt-label">'+fmtMoney(sug)+'</b></label>'
+      +'<input type="range" id="loan-amt" min="5000" max="'+limit+'" step="1000" value="'+sug+'"></div>'
+      +'<div class="slider-wrap"><label>Prazo <b id="loan-mo-label">12 meses</b></label>'
+      +'<input type="range" id="loan-mo" min="6" max="36" step="6" value="12"></div>'
+      +'<div class="loan-calc" id="loan-calc">'+renderLoanCalc(sug,12)+'</div>'
+      +'<button class="btn primary big" style="width:100%;margin-top:8px" data-act="pedir-emprestimo">Solicitar</button>';
+  }else if(limit<5000){
+    html+='<p class="muted" style="margin-top:14px">Crédito esgotado.</p>';
+  }else{
+    html+='<p class="muted" style="margin-top:14px">Máx 3 empréstimos.</p>';
+  }
+  el.innerHTML=html;
+  const amtEl=document.getElementById('loan-amt'),moEl=document.getElementById('loan-mo');
+  if(amtEl&&moEl){
+    const update=()=>{
+      const v=Number(amtEl.value),m=Number(moEl.value);
+      document.getElementById('loan-amt-label').textContent=fmtMoney(v);
+      document.getElementById('loan-mo-label').textContent=m+' meses';
+      document.getElementById('loan-calc').innerHTML=renderLoanCalc(v,m);
+    };
+    amtEl.addEventListener('input',update);moEl.addEventListener('input',update);
+  }
+}
+function renderLoanCalc(valor,meses){
+  const taxa=jurosMensal(valor,meses);const parcela=calcParcela(valor,meses,taxa);
+  const total=parcela*meses,juros=total-valor;
+  return '<div class="r"><span>Taxa</span><b style="color:#ffca63">'+(taxa*100).toFixed(2)+'%</b></div>'
+    +'<div class="r"><span>Parcela</span><b style="color:#ffbb33">'+fmtMoney(parcela)+'</b></div>'
+    +'<div class="r"><span>Total</span><b style="color:#ff8b95">'+fmtMoney(total)+'</b></div>'
+    +'<div class="r"><span>Juros</span><b style="color:#ff8b95">'+fmtMoney(juros)+'</b></div>';
+}
+function renderMateriais(){
+  const el=document.getElementById('arm-uso');if(!el)return;
+  const usado=espacoUsado(),cap=capArmazem();const pct=cap>0?usado/cap*100:0;
+  el.textContent=fmtNum(usado)+' / '+fmtNum(cap)+' un';
+  el.className=pct>=95?'full':pct>=80?'warn':'';
+  const bar=document.getElementById('arm-bar');
+  if(bar)bar.style.width=Math.min(100,pct)+'%';
+  const galEl=document.getElementById('arm-galpoes');
+  if(galEl)galEl.textContent=S.galpoes.length+' galpão'+(S.galpoes.length!==1?'ões':'');
+  const gl=document.getElementById('galpoes-list');
+  if(gl){
+    gl.innerHTML=GALPOES.map(g=>{
+      const owned=S.galpoes.filter(k=>k===g.key).length;
+      const max=owned>=g.max;const custo=Math.round(g.custo*Math.pow(1.4,owned));const ok=!max&&S.caixa>=custo;
+      return '<div class="galpao-card'+(max?' owned-max':'')+'">'
+        +'<div class="icon">'+g.icon+'</div>'
+        +'<div class="info"><b>'+g.nome+'</b><small>+'+fmtNum(g.cap)+' un · tenho '+owned+'/'+g.max+'</small></div>'
+        +(max?'<span class="owned">MÁX</span>'
+          :'<button class="btn '+(ok?'primary':'')+' mini" data-act="comprar-galpao" data-id="'+g.key+'"'
+            +(ok?'':' disabled')+'>'+fmtMoney(custo)+'</button>')+'</div>';
+    }).join('');
+  }
+  const sel=document.getElementById('mat-sel');const inp=document.getElementById('mat-qty-inp');
+  if(sel&&!sel.value)sel.value=ORDEM_MATERIAIS[0];
+  if(inp&&!inp.value)inp.value=100;
+  selecionarMaterialUI();
+}
+function render(){
+  renderTopo();renderClientes();renderPedidos();renderRack();renderLinhas();
+  renderExpedicao();renderObras();renderShop();renderMateriaisPanel();
+  renderEquipe();renderResultados();updateSky();updateAudioButtons();
+}
+
+iniciar();
+startLoadingScreen();
+</script>
+</body>
+</html>
